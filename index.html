@@ -30,6 +30,11 @@
   .controls input[type="text"], .controls select {
     width: 180px;
   }
+.fretboard-wrapper {
+  overflow-x: auto;
+  max-width: 100%;
+  margin-bottom: 1rem;
+}
   .fretboard {
     display: grid;
     background: linear-gradient(90deg, #4a2e1b, #5c3a21);
@@ -228,12 +233,12 @@
   <button onclick="renderFretboard()">Update Fretboard</button>
 </div>
 
-<div>
+<div class="fretboard-wrapper">
   <div class="fretboard" id="fretboard"></div>
   <div class="labels" id="labels"></div>
-  <div id="analysisOutput">Click "Analyze Highlights" after selecting orange notes.</div>
-  <button style="margin-top: 1rem;" onclick="analyzeHighlightedNotes()">Analyze Highlights</button>
 </div>
+<div id="analysisOutput">Click "Analyze Highlights" after selecting orange notes.</div>
+<button style="margin-top: 1rem;" onclick="analyzeHighlightedNotes()">Analyze Highlights</button>
 
 <script>
   const noteMap = {

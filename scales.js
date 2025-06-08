@@ -43,7 +43,9 @@ window.scaleDefs = [
   // Japanese
   ["hirajoshi",          [0, 2, 3, 7, 8]],
   ["iwato",              [0, 1, 5, 6, 10]],
+/*
   ["kumoi",              [0, 2, 3, 7, 9]],
+*/
   ["insen",              [0, 1, 5, 7, 10]],
   ["yo",                 [0, 2, 5, 7, 9]],
   ["in",                 [0, 1, 5, 7, 8]],
@@ -52,8 +54,10 @@ window.scaleDefs = [
   // Others
   ["bebop_major",        [0, 2, 4, 5, 7, 8, 9, 11]],
   ["bebop_dominant",     [0, 2, 4, 5, 7, 9, 10, 11]],
+/* modes of melodic minor
   ["lydian_dominant",    [0, 2, 4, 6, 7, 9, 10]],
   ["half_diminished",    [0, 2, 3, 5, 6, 8, 10]],
+*/
   ["augmented",          [0, 3, 4, 7, 8, 11]]
 ];
 

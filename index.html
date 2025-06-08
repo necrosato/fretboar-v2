@@ -3,183 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <title>Fretboar V2</title>
-<style>
-  body {
-    font-family: sans-serif;
-    background-color: #1e1e1e;
-    color: #eee;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 2rem;
-  }
-  .controls {
-    margin-bottom: 1rem;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    justify-content: center;
-  }
-  .controls input, .controls button, .controls label, .controls select {
-    background-color: #333;
-    border: none;
-    padding: 8px 12px;
-    color: white;
-    border-radius: 4px;
-  }
-  .controls input[type="text"], .controls select {
-    width: 180px;
-  }
-.fretboard-wrapper {
-  overflow-x: auto;
-  max-width: 100%;
-  margin-bottom: 1rem;
-}
-  .fretboard {
-    display: grid;
-    background: linear-gradient(90deg, #4a2e1b, #5c3a21);
-    border: 4px solid #111;
-    border-radius: 8px;
-    overflow: hidden;
-    position: relative;
-  }
-  .string-line {
-    position: absolute;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: #ccc;
-    pointer-events: none;
-  }
-  .fret {
-    width: 80px;
-    height: 50px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #eee;
-    font-weight: bold;
-    font-size: 14px;
-    border-right: 1px solid #999;
-    position: relative;
-    background-color: rgba(0, 0, 0, 0.05);
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    user-select: none;
-  }
-  /* orange highlight */
-  .fret.highlight {
-    color: #000;
-    background-color: transparent !important;
-    box-shadow: none !important;
-    position: relative;
-    z-index: 0;
-  }
-  .fret.highlight::before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background-color: #f39c12;
-    box-shadow: 0 0 10px #f39c12;
-    pointer-events: none;
-    z-index: -1;
-  }
-  /* red root highlight */
-  .fret.root-highlight {
-    color: #000;
-    background-color: transparent !important;
-    box-shadow: none !important;
-    position: relative;
-    z-index: 0;
-  }
-  .fret.root-highlight::before {
-    content: "";
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    width: 32px; height: 32px;
-    border-radius: 50%;
-    background-color: #e74c3c;
-    box-shadow: 0 0 12px #e74c3c;
-    pointer-events: none;
-    z-index: -1;
-  }
-  /* purple scale highlight */
-  .fret.scale-highlight {
-    color: #000;
-    background-color: transparent !important;
-    box-shadow: none !important;
-    position: relative;
-    z-index: 0;
-  }
-  .fret.scale-highlight::before {
-    content: "";
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    background-color: #9b59b6;
-    box-shadow: 0 0 10px #9b59b6;
-    pointer-events: none;
-    z-index: -1;
-  }
-  .fret.open {
-    font-weight: bold;
-    background-color: #333;
-    border: 2px solid #f39c12;
-    box-shadow: 0 0 5px #f39c12 inset;
-    color: #eee;
-    z-index: 1;
-  }
-  .fret.open.highlight {
-    background-color: #333 !important;
-    box-shadow: 0 0 5px #f39c12 inset !important;
-  }
-  .fret.open.scale-highlight {
-    background-color: #333 !important;
-    box-shadow: 0 0 5px #9b59b6 inset !important;
-  }
-  .fret.open.root-highlight {
-    background-color: #333 !important;
-    box-shadow: 0 0 5px #e74c3c inset !important;
-  }
-  .fret::after {
-    content: attr(data-fret);
-    position: absolute;
-    bottom: 2px; right: 4px;
-    font-size: 10px;
-    color: #777;
-    z-index: 2;
-    user-select: none;
-  }
-  .labels {
-    display: grid;
-    margin-top: 10px;
-    color: #bbb;
-    font-size: 12px;
-    text-align: center;
-  }
-  .labels div {
-    padding: 4px 0;
-    user-select: none;
-  }
-  #analysisOutput {
-    margin-top: 1.5rem;
-    max-width: 720px;
-    background: #222;
-    border-radius: 8px;
-    padding: 1rem 1.5rem;
-    font-family: monospace;
-    white-space: pre-wrap;
-    min-height: 4rem;
-  }
-</style>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
@@ -195,34 +19,14 @@
   </label>
   <label>
     Scale Root:
-    <select id="scaleRootSelect">
-      <option></option><option>C</option><option>C#</option><option>D</option><option>D#</option><option>E</option>
-      <option>F</option><option>F#</option><option>G</option><option>G#</option><option>A</option>
-      <option>A#</option><option>B</option>
-    </select>
+    <select id="scaleRootSelect"></select>
   </label>
-	<label>
-	  <input type="checkbox" id="highlightRootToggle"/> Highlight Root Note
-	</label>
+  <label>
+    <input type="checkbox" id="highlightRootToggle" checkedj/> Highlight Root Note
+  </label>
   <label>
     Scale:
-    <select id="scaleSelect">
-      <option value="">--None--</option>
-      <option value="major">Major</option>
-      <option value="pentatonic">Pentatonic</option>
-      <option value="blues">Blues</option>
-      <option value="harmonic minor">Harmonic Minor</option>
-      <option value="double_harmonic_minor">Double Harmonic Minor</option>
-      <option value="melodic minor">Melodic Minor</option>
-      <option value="diminished">Diminished</option>
-      <option value="whole tone">Whole Tone</option>
-      <option value="in">In</option>
-      <option value="insen">Insen</option>
-      <option value="ryukyu">Ryukyu</option>
-      <option value="hirajoshi">Hirajoshi</option>
-      <option value="iwato">Iwato</option>
-      <option value="yo">Yo</option>
-    </select>
+    <select id="scaleSelect"></select>
   </label>
   <label>
     <input type="checkbox" id="leftyToggle" /> Left-Handed
@@ -240,144 +44,129 @@
 <div id="analysisOutput">Click "Analyze Highlights" after selecting orange notes.</div>
 <button style="margin-top: 1rem;" onclick="analyzeHighlightedNotes()">Analyze Highlights</button>
 
+<script src="scales.js"></script> 
 <script>
-  const noteMap = {
-    "C": 0, "C#": 1, "DB": 1, "D": 2, "D#": 3, "EB": 3,
-    "E": 4, "FB": 4, "F": 5, "F#": 6, "GB": 6,
-    "G": 7, "G#": 8, "AB": 8, "A": 9, "A#": 10, "BB": 10, "B": 11, "CB": 11
-  };
-  const noteNames = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
-  function getNoteName(i){ return noteNames[i % 12]; }
-  function parseNotes(inp){
-    return inp.toUpperCase().split(/[\s,]+/)
-      .map(n=>noteMap[n]!=null?getNoteName(noteMap[n]):null)
-      .filter(Boolean);
-  }
+const noteMap = {
+  "C": 0, "C#": 1, "DB": 1, "D": 2, "D#": 3, "EB": 3,
+  "E": 4, "FB": 4, "F": 5, "F#": 6, "GB": 6,
+  "G": 7, "G#": 8, "AB": 8, "A": 9, "A#": 10, "BB": 10, "B": 11, "CB": 11
+};
+const noteNames = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+function getNoteName(i){ return noteNames[i % 12]; }
+function parseNotes(inp){
+  return inp.toUpperCase().split(/[\s,]+/)
+    .map(n=>noteMap[n]!=null?getNoteName(noteMap[n]):null)
+    .filter(Boolean);
+}
 
-  const scales = {
-    major:       [0, 2, 4, 5, 7, 9, 11],
-    pentatonic:  [0, 2, 4, 7, 9],
-    blues:       [0, 3, 5, 6, 7, 10],
-    "harmonic minor":      [0, 2, 3, 5, 7, 8, 11],
-    double_harmonic_minor: [0, 1, 4, 5, 7, 8, 11],
-    "melodic minor":       [0, 2, 3, 5, 7, 9, 11],
-    diminished:            [0, 2, 3, 5, 6, 8, 9, 11],
-    "whole tone":          [0, 2, 4, 6, 8, 10],
-    in:                    [0, 1, 5, 7, 8],
-    insen:                 [0, 1, 5, 7, 10],
-    ryukyu:                [0, 4, 5, 7, 11],
-    hirajoshi:             [0, 2, 3, 7, 8],
-    iwato:                 [0, 1, 5, 6, 10],
-    yo:                    [0, 2, 5, 7, 9]
-  };
+const scales = Object.fromEntries(window.scaleDefs);
 
-  function renderFretboard(){
-    const fb = document.getElementById('fretboard'),
-          lb = document.getElementById('labels');
-    const tuningInput = document.getElementById('tuningInput').value.trim().toUpperCase();
-    const tuningNotes = tuningInput.split(/\s+/).map(n => {
-      if(noteMap[n] !== undefined) return noteMap[n];
-      else return 4; // default to E if invalid note
+function populateSelectors(){
+  const rootSelect = document.getElementById('scaleRootSelect');
+  rootSelect.innerHTML = "<option></option>" + noteNames.map(n=>`<option>${n}</option>`).join('');
+
+  const scaleSelect = document.getElementById('scaleSelect');
+  scaleSelect.innerHTML = `<option value="">--None--</option>` + window.scaleDefs.map(
+    ([name]) => `<option value="${name}">${name}</option>`
+  ).join('');
+}
+
+function getScaleNotes(rootVal, scaleIntervals){
+  return new Set(scaleIntervals.map(i => getNoteName((rootVal + i) % 12)));
+}
+
+function renderFretboard(){
+  const fb = document.getElementById('fretboard'),
+        lb = document.getElementById('labels');
+  const tuningInput = document.getElementById('tuningInput').value.trim().toUpperCase();
+  const tuningNotes = tuningInput.split(/\s+/).map(n => noteMap[n] ?? 4);
+  const frets = parseInt(document.getElementById('fretsInput').value) + 1;
+  const highlightNotes = parseNotes(document.getElementById('notesInput').value);
+  const scaleRootName = document.getElementById('scaleRootSelect').value.toUpperCase();
+  const scaleName = document.getElementById('scaleSelect').value;
+  const lefty = document.getElementById('leftyToggle').checked;
+  const hideNM = document.getElementById('hideNonMatchingToggle').checked;
+
+  const rootVal = noteMap[scaleRootName] ?? '';
+
+  let scaleSet = new Set();
+  if(scaleName && scales[scaleName]){
+    scales[scaleName].forEach(interval => {
+      scaleSet.add(getNoteName((rootVal + interval) % 12));
     });
-    const frets = parseInt(document.getElementById('fretsInput').value) + 1;
-    const highlightNotes = parseNotes(document.getElementById('notesInput').value);
-    const scaleRootName = document.getElementById('scaleRootSelect').value.toUpperCase();
-    const scaleName = document.getElementById('scaleSelect').value;
-    const lefty = document.getElementById('leftyToggle').checked;
-    const hideNM = document.getElementById('hideNonMatchingToggle').checked;
+  }
 
-    const rootVal = noteMap[scaleRootName] ?? '';
+  const highlightsSet = new Set(highlightNotes.map(n => n.toUpperCase()));
+  if(scaleSet.size > 0){
+    highlightsSet.forEach(note => scaleSet.add(note));
+  }
 
-    // Compute scale notes
-    let scaleSet = new Set();
-    if(scaleName && scales[scaleName]){
-      scales[scaleName].forEach(interval => {
-        scaleSet.add(getNoteName((rootVal + interval) % 12));
-      });
-    }
+  const strings = lefty ? tuningNotes : [...tuningNotes].reverse();
 
-    // Highlight notes set for input
-    const highlightsSet = new Set(highlightNotes.map(n => n.toUpperCase()));
+  fb.innerHTML = '';
+  fb.style.gridTemplateColumns = `repeat(${frets},80px)`;
+  fb.style.gridTemplateRows = `repeat(${strings.length},50px)`;
 
-    // Merge highlight notes with scale notes for highlighting
-    if(scaleSet.size > 0){
-      highlightsSet.forEach(note => scaleSet.add(note));
-    }
+  document.querySelectorAll('.string-line').forEach(e => e.remove());
+  for(let i=0; i<strings.length; i++){
+    const y = (i + 0.5) * 50;
+    const line = document.createElement('div');
+    line.className = 'string-line';
+    line.style.top = `${y}px`;
+    line.style.height = i === 0 ? '3px' : '2px';
+    fb.appendChild(line);
+  }
 
-    // Strings order
-    const strings = lefty ? tuningNotes : [...tuningNotes].reverse();
-
-    fb.innerHTML = '';
-    fb.style.gridTemplateColumns = `repeat(${frets},80px)`;
-    fb.style.gridTemplateRows = `repeat(${strings.length},50px)`;
-
-    // Remove old string lines
-    document.querySelectorAll('.string-line').forEach(e => e.remove());
-
-    // Draw string lines
-    for(let i=0; i<strings.length; i++){
-      const y = (i + 0.5) * 50;
-      const line = document.createElement('div');
-      line.className = 'string-line';
-      line.style.top = `${y}px`;
-      line.style.height = i === 0 ? '3px' : '2px';
-      fb.appendChild(line);
-    }
-
-    for(let s=0; s<strings.length; s++){
-      for(let f=0; f<frets; f++){
-        const openVal = strings[s];
-        const noteIndex = (openVal + f) % 12;
-        const noteName = getNoteName(noteIndex);
-        const div = document.createElement('div');
-        div.className = 'fret';
-        div.dataset.fret = f;
-        div.dataset.note = noteName;
-        div.dataset.string = s;
-        if(f === 0) div.classList.add('open');
-
-        const isRoot = noteIndex === rootVal;
-        const isScale = scaleSet.has(noteName);
-        const isUserHighlight = highlightsSet.has(noteName);
-
-        if(hideNM && f !== 0 && !isRoot && !isScale && !isUserHighlight){
-          div.textContent = '';
-        } else {
-          div.textContent = noteName;
-        }
-
-		const showRootHighlight = document.getElementById('highlightRootToggle').checked;
-        if(isRoot && showRootHighlight){
-          div.classList.add('root-highlight');
-        } else if(isUserHighlight){
-          div.classList.add('highlight');
-        } else if(isScale){
-          div.classList.add('scale-highlight');
-        }
-
-        div.addEventListener('click', () => {
-          div.classList.toggle('highlight');
-          document.getElementById('analysisOutput').textContent = "Click 'Analyze Highlights' to update.";
-        });
-
-        fb.appendChild(div);
-      }
-    }
-
-    lb.innerHTML = '';
-    lb.style.gridTemplateColumns = `repeat(${frets},80px)`;
+  for(let s=0; s<strings.length; s++){
     for(let f=0; f<frets; f++){
-      const D = document.createElement('div');
-      D.textContent = f;
-      lb.appendChild(D);
+      const openVal = strings[s];
+      const noteIndex = (openVal + f) % 12;
+      const noteName = getNoteName(noteIndex);
+      const div = document.createElement('div');
+      div.className = 'fret';
+      div.dataset.fret = f;
+      div.dataset.note = noteName;
+      div.dataset.string = s;
+      if(f === 0) div.classList.add('open');
+
+      const isRoot = noteIndex === rootVal;
+      const isScale = scaleSet.has(noteName);
+      const isUserHighlight = highlightsSet.has(noteName);
+
+      if(hideNM && f !== 0 && !isRoot && !isScale && !isUserHighlight){
+        div.textContent = '';
+      } else {
+        div.textContent = noteName;
+      }
+
+      const showRootHighlight = document.getElementById('highlightRootToggle').checked;
+      if(isRoot && showRootHighlight){
+        div.classList.add('root-highlight');
+      } else if(isUserHighlight){
+        div.classList.add('highlight');
+      } else if(isScale){
+        div.classList.add('scale-highlight');
+      }
+
+      div.addEventListener('click', () => {
+        div.classList.toggle('highlight');
+        document.getElementById('analysisOutput').textContent = "Click 'Analyze Highlights' to update.";
+      });
+
+      fb.appendChild(div);
     }
-    document.getElementById('analysisOutput').textContent = "Click 'Analyze Highlights' after selecting orange notes.";
   }
 
-  // Helper: given root note (semitone) and scale intervals, get note set for scale
-  function getScaleNotes(rootVal, scaleIntervals){
-    return new Set(scaleIntervals.map(i => getNoteName((rootVal + i) % 12)));
+  lb.innerHTML = '';
+  lb.style.gridTemplateColumns = `repeat(${frets},80px)`;
+  for(let f=0; f<frets; f++){
+    const D = document.createElement('div');
+    D.textContent = f;
+    lb.appendChild(D);
   }
+  document.getElementById('analysisOutput').textContent = "Click 'Analyze Highlights' after selecting orange notes.";
+}
+
 function analyzeHighlightedNotes(){
   const output = document.getElementById('analysisOutput');
   const highlightedDivs = Array.from(document.querySelectorAll('.fret.highlight'));
@@ -390,8 +179,8 @@ function analyzeHighlightedNotes(){
   const results = [];
 
   for (let rootIndex = 0; rootIndex < 12; rootIndex++) {
-    for (const scaleName in scales) {
-      const scaleNotes = getScaleNotes(rootIndex, scales[scaleName]);
+    for (const [scaleName, intervals] of window.scaleDefs) {
+      const scaleNotes = getScaleNotes(rootIndex, intervals);
       const fits = [...highlightedNotes].every(note => scaleNotes.has(note));
       if (fits) {
         results.push({ root: getNoteName(rootIndex), scale: scaleName });
@@ -427,10 +216,8 @@ function analyzeHighlightedNotes(){
   }
 }
 
-
-  renderFretboard();
+populateSelectors();
+renderFretboard();
 </script>
-
 </body>
 </html>
-

@@ -147,12 +147,21 @@ function renderFretboard(){
       } else if(isScale){
         div.classList.add('scale-highlight');
       }
+	div.addEventListener('click', () => {
+	  const notesInput = document.getElementById('notesInput');
+	  let currentNotes = parseNotes(notesInput.value);
+	  const clickedNote = noteName;
 
-      div.addEventListener('click', () => {
-        div.classList.toggle('highlight');
-        document.getElementById('analysisOutput').textContent = "Click 'Analyze Highlights' to update.";
-      });
+	  const index = currentNotes.indexOf(clickedNote);
+	  if (index !== -1) {
+		currentNotes.splice(index, 1); // Remove note
+	  } else {
+		currentNotes.push(clickedNote); // Add note
+	  }
 
+	  notesInput.value = currentNotes.join(' ');
+	  renderFretboard();
+	});
       fb.appendChild(div);
     }
   }

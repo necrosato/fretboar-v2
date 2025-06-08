@@ -9,6 +9,7 @@ window.scaleDefs = [
   ["minor_pentatonic",   [0, 3, 5, 7, 10]],
   ["blues",              [0, 3, 5, 6, 7, 10]],
 
+/*
   // Modes of the major scale
   ["ionian",             [0, 2, 4, 5, 7, 9, 11]],
   ["dorian",             [0, 2, 3, 5, 7, 9, 10]],
@@ -17,6 +18,7 @@ window.scaleDefs = [
   ["mixolydian",         [0, 2, 4, 5, 7, 9, 10]],
   ["aeolian",            [0, 2, 3, 5, 7, 8, 10]],
   ["locrian",            [0, 1, 3, 5, 6, 8, 10]],
+*/
 
   // Symmetrical
   ["diminished",         [0, 2, 3, 5, 6, 8, 9, 11]],
@@ -25,6 +27,7 @@ window.scaleDefs = [
 
   // Exotic / World
   ["double_harmonic",    [0, 1, 4, 5, 7, 8, 11]],
+/*
   ["hungarian_minor",    [0, 2, 3, 6, 7, 8, 11]],
   ["persian",            [0, 1, 4, 5, 6, 8, 11]],
   ["arabian",            [0, 2, 4, 5, 6, 8, 10]],
@@ -33,6 +36,7 @@ window.scaleDefs = [
   ["spanish_phrygian",   [0, 1, 4, 5, 7, 8, 10]],
   ["romanian_minor",     [0, 2, 3, 6, 7, 9, 10]],
   ["flamenco",           [0, 1, 4, 5, 7, 8, 10]],
+*/
 
   // Japanese
   ["hirajoshi",          [0, 2, 3, 7, 8]],

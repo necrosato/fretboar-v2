@@ -29,9 +29,6 @@
     <select id="scaleSelect"></select>
   </label>
   <label>
-    <input type="checkbox" id="leftyToggle" /> Left-Handed
-  </label>
-  <label>
     <input type="checkbox" id="hideNonMatchingToggle" checked/> Hide Non-Matching Notes
   </label>
 </div>
@@ -82,7 +79,6 @@ function renderFretboard(){
   const highlightNotes = parseNotes(document.getElementById('notesInput').value);
   const scaleRootName = document.getElementById('scaleRootSelect').value.toUpperCase();
   const scaleName = document.getElementById('scaleSelect').value;
-  const lefty = document.getElementById('leftyToggle').checked;
   const hideNM = document.getElementById('hideNonMatchingToggle').checked;
 
   const rootVal = noteMap[scaleRootName] ?? '';
@@ -99,7 +95,7 @@ function renderFretboard(){
     highlightsSet.forEach(note => scaleSet.add(note));
   }
 
-  const strings = lefty ? tuningNotes : [...tuningNotes].reverse();
+  const strings = [...tuningNotes].reverse();
 
   fb.innerHTML = '';
   fb.style.gridTemplateColumns = `repeat(${frets},80px)`;
@@ -247,11 +243,39 @@ document.getElementById('scaleSelect').addEventListener('change', renderFretboar
 document.getElementById('tuningInput').addEventListener('input', renderFretboard);
 document.getElementById('fretsInput').addEventListener('input', renderFretboard);
 document.getElementById('highlightRootToggle').addEventListener('change', renderFretboard);
-document.getElementById('leftyToggle').addEventListener('change', renderFretboard);
 document.getElementById('hideNonMatchingToggle').addEventListener('change', renderFretboard);
 
 </script>
 
+<style>
+  #metrognomeBanner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #222;
+    color: #eee;
+    text-align: center;
+    padding: 10px 0;
+    font-weight: bold;
+    font-family: sans-serif;
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.7);
+    z-index: 1000;
+  }
+  #metrognomeBanner a {
+    color: #4CAF50;
+    text-decoration: none;
+  }
+  #metrognomeBanner a:hover {
+    text-decoration: underline;
+  }
+</style>
+
+<div id="metrognomeBanner">
+  <a href="https://metrognome.necrosato.com/" target="_blank" rel="noopener noreferrer">
+    Need a metrognome?
+  </a>
+</div>
 </body>
 </html>
 

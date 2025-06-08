@@ -23,7 +23,9 @@ window.scaleDefs = [
   // Symmetrical
   ["diminished",         [0, 2, 3, 5, 6, 8, 9, 11]],
   ["whole_tone",         [0, 2, 4, 6, 8, 10]],
+/*
   ["chromatic",          [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]],
+*/
 
   // Exotic / World
   ["double_harmonic",    [0, 1, 4, 5, 7, 8, 11]],

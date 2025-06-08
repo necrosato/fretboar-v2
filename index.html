@@ -22,7 +22,7 @@
     <select id="scaleRootSelect"></select>
   </label>
   <label>
-    <input type="checkbox" id="highlightRootToggle" checkedj/> Highlight Root Note
+    <input type="checkbox" id="highlightRootToggle" /> Highlight Root Note
   </label>
   <label>
     Scale:
@@ -34,15 +34,13 @@
   <label>
     <input type="checkbox" id="hideNonMatchingToggle" checked/> Hide Non-Matching Notes
   </label>
-  <button onclick="renderFretboard()">Update Fretboard</button>
 </div>
 
 <div class="fretboard-wrapper">
   <div class="fretboard" id="fretboard"></div>
   <div class="labels" id="labels"></div>
 </div>
-<div id="analysisOutput">Click "Analyze Highlights" after selecting orange notes.</div>
-<button style="margin-top: 1rem;" onclick="analyzeHighlightedNotes()">Analyze Highlights</button>
+<div id="analysisOutput">Select notes to see matching scales.</div>
 
 <script src="scales.js"></script> 
 <script>
@@ -147,21 +145,22 @@ function renderFretboard(){
       } else if(isScale){
         div.classList.add('scale-highlight');
       }
-	div.addEventListener('click', () => {
-	  const notesInput = document.getElementById('notesInput');
-	  let currentNotes = parseNotes(notesInput.value);
-	  const clickedNote = noteName;
+      div.addEventListener('click', () => {
+        const notesInput = document.getElementById('notesInput');
+        let currentNotes = parseNotes(notesInput.value);
+        const clickedNote = noteName;
 
-	  const index = currentNotes.indexOf(clickedNote);
-	  if (index !== -1) {
-		currentNotes.splice(index, 1); // Remove note
-	  } else {
-		currentNotes.push(clickedNote); // Add note
-	  }
+        const index = currentNotes.indexOf(clickedNote);
+        if (index !== -1) {
+          currentNotes.splice(index, 1); // Remove note
+        } else {
+          currentNotes.push(clickedNote); // Add note
+        }
 
-	  notesInput.value = currentNotes.join(' ');
-	  renderFretboard();
-	});
+        notesInput.value = currentNotes.join(' ');
+        renderFretboard();
+        analyzeHighlightedNotes(); // Analyze automatically on note click
+      });
       fb.appendChild(div);
     }
   }
@@ -173,7 +172,11 @@ function renderFretboard(){
     D.textContent = f;
     lb.appendChild(D);
   }
-  document.getElementById('analysisOutput').textContent = "Click 'Analyze Highlights' after selecting orange notes.";
+  if(highlightNotes.length > 0){
+    analyzeHighlightedNotes(); // Also analyze on render if notes exist
+  } else {
+    document.getElementById('analysisOutput').textContent = "Select notes to see scale analysis automatically.";
+  }
 }
 
 function analyzeHighlightedNotes(){
@@ -227,6 +230,22 @@ function analyzeHighlightedNotes(){
 
 populateSelectors();
 renderFretboard();
+
+// Attach input listeners for interactive controls to trigger re-render and analyze
+document.getElementById('notesInput').addEventListener('input', () => {
+  renderFretboard();
+  analyzeHighlightedNotes();
+});
+document.getElementById('scaleRootSelect').addEventListener('change', renderFretboard);
+document.getElementById('scaleSelect').addEventListener('change', renderFretboard);
+document.getElementById('tuningInput').addEventListener('input', renderFretboard);
+document.getElementById('fretsInput').addEventListener('input', renderFretboard);
+document.getElementById('highlightRootToggle').addEventListener('change', renderFretboard);
+document.getElementById('leftyToggle').addEventListener('change', renderFretboard);
+document.getElementById('hideNonMatchingToggle').addEventListener('change', renderFretboard);
+
 </script>
+
 </body>
 </html>
+

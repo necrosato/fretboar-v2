@@ -181,7 +181,13 @@ function renderFretboard(){
 
 function analyzeHighlightedNotes(){
   const output = document.getElementById('analysisOutput');
-  const highlightedDivs = Array.from(document.querySelectorAll('.fret.highlight'));
+    const showRootHighlight = document.getElementById('highlightRootToggle').checked;
+    let selector = '.fret.highlight';
+    if(showRootHighlight){
+          // include root-highlight divs too
+          selector = '.fret.highlight, .fret.root-highlight';
+    }
+    const highlightedDivs = Array.from(document.querySelectorAll(selector));
   if (highlightedDivs.length === 0) {
     output.textContent = "No highlighted notes (orange) selected.";
     return;

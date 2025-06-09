@@ -171,3 +171,8 @@ font-family: monospace;
 white-space: pre-wrap;
 min-height: 4rem;
 }
+.selected-scale {
+background: #4CAF50 !important;
+border-color: #4CAF50 !important;
+color: white !important;
+}

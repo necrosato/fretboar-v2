@@ -1,178 +1,214 @@
+/* Base layout */
 body {
-font-family: sans-serif;
-background-color: #1e1e1e;
-color: #eee;
-display: flex;
-flex-direction: column;
-align-items: center;
-padding: 2rem;
+  font-family: sans-serif;
+  background-color: #1e1e1e;
+  color: #eee;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
 }
+
 .controls {
-margin-bottom: 1rem;
-display: flex;
-flex-wrap: wrap;
-gap: 1rem;
-justify-content: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 1rem;
 }
-.controls input, .controls button, .controls label, .controls select {
-background-color: #333;
-border: none;
-padding: 8px 12px;
-color: white;
-border-radius: 4px;
+
+.controls input,
+.controls select,
+.controls button,
+.controls label {
+  background-color: #333;
+  border: none;
+  padding: 8px 12px;
+  color: white;
+  border-radius: 4px;
 }
-.controls input[type="text"], .controls select {
-width: 180px;
+
+.controls input[type="text"],
+.controls select {
+  width: 180px;
 }
+
+/* Fretboard container */
 .fretboard-wrapper {
-overflow-x: auto;
-max-width: 100%;
-margin-bottom: 1rem;
+  overflow-x: auto;
+  max-width: 100%;
+  margin-bottom: 1rem;
 }
+
 .fretboard {
-display: grid;
-background: linear-gradient(90deg, #4a2e1b, #5c3a21);
-border: 4px solid #111;
-border-radius: 8px;
-overflow: hidden;
-position: relative;
-width: max-content;
+  display: grid;
+  background: linear-gradient(90deg, #4a2e1b, #5c3a21);
+  border: 4px solid #111;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  width: max-content;
 }
+
 .string-line {
-position: absolute;
-left: 0;
-right: 0;
-height: 2px;
-background: #ccc;
-pointer-events: none;
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #ccc;
+  pointer-events: none;
 }
+
+/* Frets */
 .fret {
-width: 80px;
-height: 50px;
-display: flex;
-justify-content: center;
-align-items: center;
-color: #eee;
-font-weight: bold;
-font-size: 14px;
-border-right: 1px solid #999;
-position: relative;
-background-color: rgba(0, 0, 0, 0.05);
-cursor: pointer;
-transition: background-color 0.3s ease;
-user-select: none;
+  width: 80px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 14px;
+  color: #eee;
+  border-right: 1px solid #999;
+  background-color: rgba(0, 0, 0, 0.05);
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  user-select: none;
 }
-.fret.highlight {
-color: #000;
-background-color: transparent !important;
-box-shadow: none !important;
-position: relative;
-z-index: 0;
-}
-.fret.highlight::before {
-content: "";
-position: absolute;
-top: 50%;
-left: 50%;
-transform: translate(-50%, -50%);
-width: 28px;
-height: 28px;
-border-radius: 50%;
-background-color: #f39c12;
-box-shadow: 0 0 10px #f39c12;
-pointer-events: none;
-z-index: -1;
-}
-.fret.root-highlight {
-color: #000;
-background-color: transparent !important;
-box-shadow: none !important;
-position: relative;
-z-index: 0;
-}
-.fret.root-highlight::before {
-content: "";
-position: absolute;
-top: 50%; left: 50%;
-transform: translate(-50%, -50%);
-width: 32px; height: 32px;
-border-radius: 50%;
-background-color: #e74c3c;
-box-shadow: 0 0 12px #e74c3c;
-pointer-events: none;
-z-index: -1;
-}
-.fret.scale-highlight {
-color: #000;
-background-color: transparent !important;
-box-shadow: none !important;
-position: relative;
-z-index: 0;
-}
-.fret.scale-highlight::before {
-content: "";
-position: absolute;
-top: 50%; left: 50%;
-transform: translate(-50%, -50%);
-width: 28px; height: 28px;
-border-radius: 50%;
-background-color: #9b59b6;
-box-shadow: 0 0 10px #9b59b6;
-pointer-events: none;
-z-index: -1;
-}
-.fret.open {
-font-weight: bold;
-background-color: #333;
-border: 2px solid #f39c12;
-box-shadow: 0 0 5px #f39c12 inset;
-color: #eee;
-z-index: 1;
-}
-.fret.open.highlight {
-background-color: #333 !important;
-box-shadow: 0 0 5px #f39c12 inset !important;
-}
-.fret.open.scale-highlight {
-background-color: #333 !important;
-box-shadow: 0 0 5px #9b59b6 inset !important;
-}
-.fret.open.root-highlight {
-background-color: #333 !important;
-box-shadow: 0 0 5px #e74c3c inset !important;
-}
+
 .fret::after {
-content: attr(data-fret);
-position: absolute;
-bottom: 2px; right: 4px;
-font-size: 10px;
-color: #777;
-z-index: 2;
-user-select: none;
+  content: attr(data-fret);
+  position: absolute;
+  bottom: 2px;
+  right: 4px;
+  font-size: 10px;
+  color: #777;
+  z-index: 2;
+  user-select: none;
 }
+
+/* Common highlight base */
+.fret.highlight,
+.fret.root-highlight,
+.fret.scale-highlight {
+  color: #000;
+  background-color: transparent;
+  box-shadow: none;
+  z-index: 0;
+}
+
+.fret.highlight::before,
+.fret.root-highlight::before,
+.fret.scale-highlight::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.fret.highlight::before {
+  width: 28px;
+  height: 28px;
+  background-color: #f39c12;
+  box-shadow: 0 0 10px #f39c12;
+}
+
+.fret.root-highlight::before {
+  width: 32px;
+  height: 32px;
+  background-color: #e74c3c;
+  box-shadow: 0 0 12px #e74c3c;
+}
+
+.fret.scale-highlight::before {
+  width: 28px;
+  height: 28px;
+  background-color: #9b59b6;
+  box-shadow: 0 0 10px #9b59b6;
+}
+
+/* Open fret variations */
+.fret.open {
+  font-weight: bold;
+  background-color: #333;
+  border: 2px solid #f39c12;
+  box-shadow: inset 0 0 5px #f39c12;
+  color: #eee;
+  z-index: 1;
+}
+
+.fret.open.highlight {
+  box-shadow: inset 0 0 5px #f39c12;
+}
+
+.fret.open.scale-highlight {
+  box-shadow: inset 0 0 5px #9b59b6;
+}
+
+.fret.open.root-highlight {
+  box-shadow: inset 0 0 5px #e74c3c;
+}
+
+/* Fretboard labels */
 .labels {
-display: grid;
-margin-top: 10px;
-color: #bbb;
-font-size: 12px;
-text-align: center;
+  display: grid;
+  margin-top: 10px;
+  color: #bbb;
+  font-size: 12px;
+  text-align: center;
 }
+
 .labels div {
-padding: 4px 0;
-user-select: none;
+  padding: 4px 0;
+  user-select: none;
 }
+
+/* Scale analysis output */
 #analysisOutput {
-margin-top: 1.5rem;
-max-width: 720px;
-background: #222;
-border-radius: 8px;
-padding: 1rem 1.5rem;
-font-family: monospace;
-white-space: pre-wrap;
-min-height: 4rem;
+  margin-top: 1.5rem;
+  max-width: 720px;
+  background: #222;
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  font-family: monospace;
+  white-space: pre-wrap;
+  min-height: 4rem;
 }
+
 .selected-scale {
-background: #4CAF50 !important;
-border-color: #4CAF50 !important;
-color: white !important;
+  background-color: #4CAF50 !important;
+  border: 2px solid #4CAF50;
+  color: white !important;
+  box-shadow: 0 0 6px #4CAF50;
 }
+
+/* Footer banner */
+#metrognomeBanner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #222;
+  color: #eee;
+  text-align: center;
+  padding: 10px 0;
+  font-weight: bold;
+  font-family: sans-serif;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+}
+
+#metrognomeBanner a {
+  color: #4CAF50;
+  text-decoration: none;
+}
+
+#metrognomeBanner a:hover {
+  text-decoration: underline;
+}
+

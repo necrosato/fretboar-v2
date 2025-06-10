@@ -1,3 +1,5 @@
+const maxFretWidth = 90;
+const minFretWidth = 50;
 const scales = Object.fromEntries(window.scaleDefs);
 const noteMap = {
   "C": 0, "C#": 1, "DB": 1, "D": 2, "D#": 3, "EB": 3,
@@ -60,7 +62,7 @@ function renderFretboard() {
   const strings = tuningNotes.slice().reverse();
 
   fb.innerHTML = '';
-  fb.style.gridTemplateColumns = `repeat(${frets},80px)`;
+  fb.style.gridTemplateColumns = `repeat(${frets},90px)`;
   fb.style.gridTemplateRows = `repeat(${strings.length},50px)`;
 
   document.querySelectorAll('.string-line').forEach(e => e.remove());
@@ -68,7 +70,7 @@ function renderFretboard() {
     const line = document.createElement('div');
     line.className = 'string-line';
     line.style.top = `${(i + 0.5) * 50}px`;
-    line.style.height = i === 0 ? '3px' : '2px';
+    line.style.height = `${i*.3+1}px`;
     fb.appendChild(line);
   });
 
@@ -79,6 +81,8 @@ function renderFretboard() {
       const noteName = getNoteName(noteIndex);
       const div = document.createElement('div');
       div.className = 'fret';
+      const fretWidth = maxFretWidth - ((maxFretWidth - minFretWidth)/frets);
+      div.style.width = fretWidth;
       div.dataset.fret = f;
       div.dataset.note = noteName;
       div.dataset.string = s;
@@ -121,7 +125,7 @@ function renderFretboard() {
   }
 
   lb.innerHTML = '';
-  lb.style.gridTemplateColumns = `repeat(${frets},80px)`;
+  lb.style.gridTemplateColumns = `repeat(${frets},90px)`;
   for (let f = 0; f < frets; f++) {
     const D = document.createElement('div');
     D.textContent = f;
@@ -172,13 +176,6 @@ function analyzeHighlightedNotes() {
         const [root, scale] = label.split(' ');
         const btn = document.createElement('button');
         btn.textContent = `${root} ${scale}`;
-        btn.style.margin = '4px';
-        btn.style.padding = '6px 10px';
-        btn.style.background = '#444';
-        btn.style.border = '1px solid #888';
-        btn.style.color = '#fff';
-        btn.style.borderRadius = '4px';
-        btn.style.cursor = 'pointer';
 
         const scaleRootSelect = document.getElementById('scaleRootSelect');
         const scaleSelect = document.getElementById('scaleSelect');

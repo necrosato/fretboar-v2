@@ -1,12 +1,22 @@
 /* Base layout */
 body {
-  font-family: sans-serif;
+  font-family: monospace;
   background-color: #1e1e1e;
   color: #eee;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 2rem;
+}
+
+button {
+margin: 4px;
+padding: 6px 10px;
+background: #444;
+border: 1px solid #888;
+color: #eee;
+border-radius: 4px;
+cursor: pointer;
 }
 
 .controls {
@@ -55,13 +65,12 @@ body {
   left: 0;
   right: 0;
   height: 2px;
-  background: #ccc;
+  background: #aaa;
   pointer-events: none;
 }
 
 /* Frets */
 .fret {
-  width: 80px;
   height: 50px;
   display: flex;
   justify-content: center;
@@ -69,14 +78,11 @@ body {
   font-weight: bold;
   font-size: 14px;
   color: #eee;
-  border-right: 1px solid #999;
-  background-color: rgba(0, 0, 0, 0.05);
+  border-right: 4px solid #777;
   position: relative;
   cursor: pointer;
-  transition: background-color 0.3s ease;
   user-select: none;
 }
-
 .fret::after {
   content: attr(data-fret);
   position: absolute;
@@ -92,15 +98,14 @@ body {
 .fret.highlight,
 .fret.root-highlight,
 .fret.scale-highlight {
-  color: #000;
-  background-color: transparent;
   box-shadow: none;
-  z-index: 0;
+  z-index: 2;
 }
-
 .fret.highlight::before,
 .fret.root-highlight::before,
 .fret.scale-highlight::before {
+  width: 28px;
+  height: 28px;
   content: "";
   position: absolute;
   top: 50%;
@@ -110,24 +115,15 @@ body {
   pointer-events: none;
   z-index: -1;
 }
-
 .fret.highlight::before {
-  width: 28px;
-  height: 28px;
   background-color: #f39c12;
   box-shadow: 0 0 10px #f39c12;
 }
-
 .fret.root-highlight::before {
-  width: 32px;
-  height: 32px;
   background-color: #e74c3c;
   box-shadow: 0 0 12px #e74c3c;
 }
-
 .fret.scale-highlight::before {
-  width: 28px;
-  height: 28px;
   background-color: #9b59b6;
   box-shadow: 0 0 10px #9b59b6;
 }
@@ -138,18 +134,14 @@ body {
   background-color: #333;
   border: 2px solid #f39c12;
   box-shadow: inset 0 0 5px #f39c12;
-  color: #eee;
   z-index: 1;
 }
-
 .fret.open.highlight {
   box-shadow: inset 0 0 5px #f39c12;
 }
-
 .fret.open.scale-highlight {
   box-shadow: inset 0 0 5px #9b59b6;
 }
-
 .fret.open.root-highlight {
   box-shadow: inset 0 0 5px #e74c3c;
 }
@@ -170,7 +162,6 @@ body {
 
 /* Scale analysis output */
 #analysisOutput {
-  margin-top: 1.5rem;
   max-width: 720px;
   background: #222;
   border-radius: 8px;
@@ -188,7 +179,7 @@ body {
 }
 
 /* Footer banner */
-#metrognomeBanner {
+#footerBanner {
   position: fixed;
   bottom: 0;
   left: 0;
@@ -198,17 +189,14 @@ body {
   text-align: center;
   padding: 10px 0;
   font-weight: bold;
-  font-family: sans-serif;
+  font-family: monospace;
   box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.7);
-  z-index: 1000;
 }
 
-#metrognomeBanner a {
+#footerBanner a {
   color: #4CAF50;
   text-decoration: none;
 }
-
-#metrognomeBanner a:hover {
+#footerBanner a:hover {
   text-decoration: underline;
 }
-

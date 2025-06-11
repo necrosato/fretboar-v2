@@ -73,6 +73,7 @@ function renderFretboard() {
     line.style.height = `${i*.3+1}px`;
     fb.appendChild(line);
   });
+  const metroHighlight = highlightNotes[(window.playCount-1) % highlightNotes.length];
 
   for (let s = 0; s < strings.length; s++) {
     for (let f = 0; f < frets; f++) {
@@ -98,7 +99,9 @@ function renderFretboard() {
         div.textContent = noteName;
       }
 
-      if (isRoot && highlightRootToggle) {
+      if (window.playCount > 0 && noteName == metroHighlight) {
+        div.classList.add('metro-highlight');
+      } else if (isRoot && highlightRootToggle) {
         div.classList.add('root-highlight');
       } else if (isUserHighlight) {
         div.classList.add('highlight');

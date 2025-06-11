@@ -1,3 +1,4 @@
+window.playCount = 0;
 class Metronome {
   constructor() {
     this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -57,6 +58,8 @@ class Metronome {
   }
 
   stop() {
+    window.playCount = 0;
+    renderFretboard();
     this.isPlaying = false;
     if (this.intervalId) clearInterval(this.intervalId);
     this.renderMeasures();
@@ -83,6 +86,8 @@ class Metronome {
   }
 
   playNote() {
+    window.playCount++;
+    renderFretboard();
     const currentMeasureData = this.sequence[this.currentMeasure];
     const tone = currentMeasureData.tones[this.currentNote];
     const osc = this.audioContext.createOscillator();

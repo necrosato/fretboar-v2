@@ -7,6 +7,7 @@ body {
   flex-direction: column;
   align-items: center;
   padding: 2rem;
+  touch-action: manipulation;
 }
 
 button {
@@ -36,6 +37,10 @@ cursor: pointer;
   padding: 8px 12px;
   color: white;
   border-radius: 4px;
+}
+
+.controls #scaleRootSelect {
+    width: 60px;
 }
 
 .controls input[type="text"],
@@ -160,20 +165,8 @@ cursor: pointer;
   user-select: none;
 }
 
-/* Scale analysis output */
-#analysisOutput {
-  max-width: 720px;
-  background: #222;
-  border-radius: 8px;
-  padding: 1rem 1.5rem;
-  font-family: monospace;
-  white-space: pre-wrap;
-  min-height: 4rem;
-}
-
 .selected-scale {
   background-color: #4CAF50 !important;
-  border: 2px solid #4CAF50;
   color: white !important;
   box-shadow: 0 0 6px #4CAF50;
 }
@@ -191,6 +184,7 @@ cursor: pointer;
   font-weight: bold;
   font-family: monospace;
   box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.7);
+  z-index: 3;
 }
 
 #footerBanner a {
@@ -199,4 +193,97 @@ cursor: pointer;
 }
 #footerBanner a:hover {
   text-decoration: underline;
+}
+
+.analysis-metro-container {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  justify-content: center;
+  flex-wrap: nowrap;
+  margin-top: 2rem;
+}
+
+.analysis-panel, .metronome-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex-grow: 1;
+  min-width: 340px;
+}
+
+/* Scale analysis output */
+#analysisOutput {
+  flex: 1;
+  background: #222;
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  font-family: monospace;
+  white-space: pre-wrap;
+  min-height: 4rem;
+}
+
+.analysis-panel label {
+  font-size: 14px;
+}
+
+#metronome-controls {
+  display: inline-block;
+  flex: 1;
+}
+
+.measure {
+  background: #222;
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  font-family: monospace;
+  white-space: pre-wrap;
+  min-height: 4rem;
+}
+
+.beat {
+  margin: 4px;
+  padding: 6px 10px;
+  border: 1px solid #888;
+  color: #fff;
+  border-radius: 4px;
+  background: #444;
+}
+
+.measure input {
+  background: #333;
+  color: white;
+  border: 1px solid #666;
+  padding: 4px 8px;
+  margin: 4px;
+  border-radius: 4px;
+  width: 60px;
+}
+
+input.active-beat {
+  background: #4CAF50;
+  box-shadow: 0 0 6px #4CAF50;
+  font-weight: bold;
+}
+
+.measure label {
+  display: inline-block;
+  margin: 0 8px 0 0;
+}
+
+.measure {
+  display: inline-block;
+  margin: 1rem;
+  padding: 1rem;
+  border: 1px solid #444;
+  border-radius: 8px;
+  background: #222;
+  vertical-align: top;
+}
+
+.tone-column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
 }

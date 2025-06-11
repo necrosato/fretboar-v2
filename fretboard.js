@@ -42,7 +42,7 @@ function renderFretboard() {
   const highlightNotes = parseNotes(notesInputEl.value);
   const scaleRootName = document.getElementById('scaleRootSelect').value.toUpperCase();
   const scaleName = document.getElementById('scaleSelect').value;
-  const hideNM = document.getElementById('hideNonMatchingToggle').checked;
+  const showAll = document.getElementById('showAllNotesToggle').checked;
   const highlightRootToggle = document.getElementById('highlightRootToggle').checked;
 
   const rootVal = noteMap[scaleRootName] ?? '';
@@ -92,7 +92,7 @@ function renderFretboard() {
       const isScale = scaleSet.has(noteName);
       const isUserHighlight = highlightsSet.has(noteName);
 
-      if (hideNM && f !== 0 && !isRoot && !isScale && !isUserHighlight) {
+      if (!showAll && f !== 0 && !isRoot && !isScale && !isUserHighlight) {
         div.textContent = '';
       } else {
         div.textContent = noteName;
@@ -106,7 +106,7 @@ function renderFretboard() {
         div.classList.add('scale-highlight');
       }
 
-      div.addEventListener('click', () => {
+      div.addEventListener('pointerup', () => {
         let currentNotes = parseNotes(notesInputEl.value);
         const clickedNote = noteName;
         const index = currentNotes.indexOf(clickedNote);
@@ -167,50 +167,67 @@ function analyzeHighlightedNotes() {
   if (results.size === 0) {
     output.textContent = "No scale/root combinations contain all highlighted notes.";
   } else {
-    output.innerHTML = `<strong>Scales containing all highlighted notes:</strong><br>`;
-    const list = document.createElement('ul');
-    for (const [noteSetKey, scales] of results.entries()) {
-      const item = document.createElement('li');
-      scales.sort();
-      scales.forEach(label => {
-        const [root, scale] = label.split(' ');
-        const btn = document.createElement('button');
-        btn.textContent = `${root} ${scale}`;
+	output.innerHTML = `<strong>Scales containing all highlighted notes:</strong><br>`;
+	const groupBy = document.getElementById('groupBySelect')?.value || 'root';
 
-        const scaleRootSelect = document.getElementById('scaleRootSelect');
-        const scaleSelect = document.getElementById('scaleSelect');
-        if (scaleRootSelect.value === root && scaleSelect.value === scale) {
-          btn.classList.add('selected-scale');
-        }
+	const grouped = new Map();
 
-        btn.onclick = () => {
-          if (
-            scaleRootSelect.value === root &&
-            scaleSelect.value === scale
-          ) {
-            scaleRootSelect.value = '';
-            scaleSelect.value = '';
-          } else {
-            scaleRootSelect.value = root;
-            scaleSelect.value = scale;
-          }
-          renderFretboard();
-        };
-        item.appendChild(btn);
-      });
-      list.appendChild(item);
+    for (const [scaleNotes, scaleLabels] of results.entries()) {
+	  for (const label of scaleLabels) {
+		const [root, ...scaleParts] = label.split(' ');
+		const scale = scaleParts.join(' ');
+		const key = groupBy === 'root' ? root : groupBy === 'scale' ? scale : scaleNotes;
+		const text = groupBy === 'root' ? scale : groupBy === 'scale' ? root : label;
+		if (!grouped.has(key)) { grouped.set(key, []); }
+		grouped.get(key).push({ root, scale, text });
+	  }
     }
-    output.appendChild(list);
+
+	const list = document.createElement('ul');
+    for (const [groupKey, entries] of [...grouped.entries()].sort((a, b) => {
+          return a[0].localeCompare(b[0]); // Sort by groupKey
+    })) {
+	  const groupItem = document.createElement('li');
+	  groupItem.innerHTML = `<strong>${groupKey}</strong>: `;
+
+	  entries.sort((a, b) => a.scale.localeCompare(b.scale));
+	  for (const { root, scale, text } of entries) {
+		const btn = document.createElement('button');
+		btn.textContent = `${text}`;
+
+		const scaleRootSelect = document.getElementById('scaleRootSelect');
+		const scaleSelect = document.getElementById('scaleSelect');
+
+		if (scaleRootSelect.value === root && scaleSelect.value === scale) {
+		  btn.classList.add('selected-scale');
+		}
+
+		btn.onpointerup = () => {
+		  if (scaleRootSelect.value === root && scaleSelect.value === scale) {
+			scaleRootSelect.value = '';
+			scaleSelect.value = '';
+		  } else {
+			scaleRootSelect.value = root;
+			scaleSelect.value = scale;
+		  }
+		  renderFretboard();
+		};
+		groupItem.appendChild(btn);
+	  }
+	  list.appendChild(groupItem);
+	}
+	output.appendChild(list);
   }
 }
 
 populateSelectors();
 renderFretboard();
+document.getElementById('groupBySelect')?.addEventListener('change', analyzeHighlightedNotes);
 
-['notesInput','scaleRootSelect','scaleSelect','tuningInput','fretsInput','highlightRootToggle','hideNonMatchingToggle'].forEach(id => {
+['notesInput','scaleRootSelect','scaleSelect','tuningInput','fretsInput','highlightRootToggle','showAllNotesToggle'].forEach(id => {
   const el = document.getElementById(id);
   if (!el) return;
-  const eventType = (id === 'notesInput') ? 'input' : (id === 'highlightRootToggle' || id === 'hideNonMatchingToggle' || id === 'scaleRootSelect' || id === 'scaleSelect') ? 'change' : 'input';
+  const eventType = (id === 'notesInput') ? 'input' : (id === 'highlightRootToggle' || id === 'showAllNotesToggle' || id === 'scaleRootSelect' || id === 'scaleSelect') ? 'change' : 'input';
   el.addEventListener(eventType, () => {
     renderFretboard();
     if (id === 'notesInput') analyzeHighlightedNotes();

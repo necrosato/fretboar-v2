@@ -37,20 +37,30 @@
     <div id="analysisOutput">Select notes to see matching scales.</div>
   </div>
   <div class="metronome-panel">
-	  <div>
-		<h1>Metro Gnome</h1>
-		<div id="metronome-controls">
-		  <button id="start">Start</button>
-		  <button id="stop">Stop</button>
-		  <button id="add-measure">Add Measure</button><br>
-		  <button id="load-sequence">Load Sequence</button>
-		  <button id="save-sequence">Save Sequence</button>
-		  <input type="file" id="file-input" style="display: none;">
-		</div>
-		<div id="measures"></div>
-	</div>
+    <h1>Metro Gnome</h1>
+	<label>
+	  Synchronize Metronome to:
+	  <select id="metroSyncSelect">
+		<option value="active">Highlight Notes</option>
+		<option value="scale">Scale Notes</option>
+		<option value="none">None</option>
+	  </select>
+	</label>
+    <div id="metronome-controls">
+      <button id="start">Start</button>
+      <button id="stop">Stop</button>
+      <button id="add-measure">Add Measure</button><br>
+      <button id="load-sequence">Load Sequence</button>
+      <button id="save-sequence">Save Sequence</button>
+      <input type="file" id="file-input" style="display: none;"><br>
+  	  <label>Override Tone to Synchronized Note: <input type="checkbox" id="overrideToneToggle"/></label>
+    </div>
+    <div id="measures"></div>
   </div>
 </div>
+<h1>How To Use</h1>
+<p>Fret Boar is an interactive tool to help fretted instrument players learn and practice. The fretboard is interactive and responsive to the settings. Simply tap/click on some notes, or enter them in the "Highlight Notes" to have them appear on the fretboard. Select a scale from the dropdown or analysis output to highlight every note of the scale on the fretboard.</p>
+<p>Metro Gnome is a fully functional metronome, and integrates with Fret Boar to sequence the fretboard visually and/or audibly. "Add Measure" can be used to create sequences of different rhythms with different time signatures and tempos, looping through the measures. Each beat can have its frequency set, or you can have it match the frequency of the synchronized note on the fretboard.</p>
 <div id="footerBanner">
   <a href="https://necrosato.github.io/metrognome" target="_blank" rel="noopener noreferrer">
     Metro Gnome V1

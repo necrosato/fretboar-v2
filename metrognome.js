@@ -1,4 +1,44 @@
 window.playCount = 0;
+
+function noteToFrequency(note) {
+  const noteRegex = /^([A-Ga-g])(#|b)?(\d+)?$/;
+  const match = noteRegex.exec(note.trim());
+  if (!match) {
+    console.warn("Invalid note format:", note);
+    return null;
+  }
+
+  let [, letter, accidental, octave] = match;
+  letter = letter.toUpperCase();
+  accidental = accidental || '';
+  octave = parseInt(octave, 10);
+
+  // Default to octave 4 if none is provided
+  if (!octave || isNaN(octave)) octave = 4;
+
+  const semitoneMap = {
+    "C": 0, "C#": 1, "Db": 1,
+    "D": 2, "D#": 3, "Eb": 3,
+    "E": 4,
+    "F": 5, "F#": 6, "Gb": 6,
+    "G": 7, "G#": 8, "Ab": 8,
+    "A": 9, "A#": 10, "Bb": 10,
+    "B": 11
+  };
+
+  const key = letter + accidental;
+  const semitone = semitoneMap[key];
+
+  if (semitone == null) {
+    console.warn("Unknown note name:", key);
+    return null;
+  }
+
+  const midi = (octave + 1) * 12 + semitone;
+  const fact = Math.pow(2, (midi - 69) / 12);
+  return 440*fact; 
+}
+
 class Metronome {
   constructor() {
     this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -79,6 +119,10 @@ class Metronome {
   }
 
   scheduler() {
+	if (this.sequence.length === 0) {
+	  this.stop();
+	  return;
+	}
     while (this.nextNoteTime < this.audioContext.currentTime + this.scheduleAheadTime) {
       this.playNote();
       this.nextNote();
@@ -89,12 +133,28 @@ class Metronome {
     window.playCount++;
     renderFretboard();
     const currentMeasureData = this.sequence[this.currentMeasure];
-    const tone = currentMeasureData.tones[this.currentNote];
+    const overrideToneToggle = document.getElementById('overrideToneToggle').checked;
+
+    const scaleRootName = document.getElementById('scaleRootSelect').value.toUpperCase();
+    const minFrequency = scaleRootName ? noteToFrequency(scaleRootName) : 440;
+    let tone = overrideToneToggle && window.metroNote ? noteToFrequency(window.metroNote) : currentMeasureData.tones[this.currentNote];
+	tone = overrideToneToggle && tone < minFrequency ? tone * 2 : tone;
     const osc = this.audioContext.createOscillator();
     osc.frequency.value = tone || 440;
-    osc.connect(this.audioContext.destination);
-    osc.start(this.nextNoteTime);
-    osc.stop(this.nextNoteTime + 0.1);
+  const gain = this.audioContext.createGain();
+  osc.connect(gain);
+  gain.connect(this.audioContext.destination);
+
+  const startTime = this.nextNoteTime;
+  const stopTime = startTime + 0.1;
+
+  // Apply smooth envelope
+  gain.gain.setValueAtTime(0, startTime);
+  gain.gain.linearRampToValueAtTime(0.3, startTime + 0.005); // quick fade-in
+  gain.gain.linearRampToValueAtTime(0, stopTime); // fade-out
+
+  osc.start(startTime);
+  osc.stop(stopTime);
     this.renderMeasures();
   }
 

@@ -1,3 +1,4 @@
+window.metroNote = undefined;
 const maxFretWidth = 90;
 const minFretWidth = 50;
 const scales = Object.fromEntries(window.scaleDefs);
@@ -44,14 +45,14 @@ function renderFretboard() {
   const scaleName = document.getElementById('scaleSelect').value;
   const showAll = document.getElementById('showAllNotesToggle').checked;
   const highlightRootToggle = document.getElementById('highlightRootToggle').checked;
-
+  
   const rootVal = noteMap[scaleRootName] ?? '';
 
   let scaleSet = new Set();
+  let scaleNotes = [];
   if (scaleName && scales[scaleName]) {
-    scales[scaleName].forEach(interval => {
-      scaleSet.add(getNoteName((rootVal + interval) % 12));
-    });
+    scaleNotes = scales[scaleName].map(interval => getNoteName((rootVal + interval) % 12));
+    scaleSet = new Set(scaleNotes);
   }
 
   const highlightsSet = new Set(highlightNotes.map(n => n.toUpperCase()));
@@ -73,7 +74,11 @@ function renderFretboard() {
     line.style.height = `${i*.3+1}px`;
     fb.appendChild(line);
   });
-  const metroHighlight = highlightNotes[(window.playCount-1) % highlightNotes.length];
+
+  const metroSync = document.getElementById('metroSyncSelect')?.value || 'none';
+  window.metroNote = metroSync === 'active' ? 
+        highlightNotes[(window.playCount-1) % highlightNotes.length] :
+        metroSync === 'scale' ? scaleNotes[(window.playCount-1) % scaleNotes.length] : undefined;
 
   for (let s = 0; s < strings.length; s++) {
     for (let f = 0; f < frets; f++) {
@@ -99,7 +104,7 @@ function renderFretboard() {
         div.textContent = noteName;
       }
 
-      if (window.playCount > 0 && noteName == metroHighlight) {
+      if (window.playCount > 0 && noteName == metroNote && metroSync != 'none') {
         div.classList.add('metro-highlight');
       } else if (isRoot && highlightRootToggle) {
         div.classList.add('root-highlight');

@@ -119,7 +119,6 @@ function renderFretboard() {
 			div.style.setProperty('--ring-color', pitchColors[note]);
           }
       };
-	  console.log(metroSync);
       if (window.playCount > 0 && noteName == window.metroNote) {
         pitchHighlight(div, noteName, 'metro-highlight');
       } else if (isRoot && highlightRootToggle) {

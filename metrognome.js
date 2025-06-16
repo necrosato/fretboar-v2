@@ -51,6 +51,7 @@ class Metronome {
     this.sequence = [];
     this.currentMeasure = 0;
     this.currentBeat = 0;
+    this.addMeasure();
   }
 
   addMeasure(tempo = 120, timeSignature = [4, 4], tones = []) {

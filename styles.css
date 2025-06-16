@@ -121,6 +121,22 @@ button:hover {
   user-select: none;
 }
 
+.fret.ring::after {
+  content: "";
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 3px solid var(--ring-color, #fff);
+  box-shadow: 0 0 10px var(--ring-color, #fff);
+  opacity: 0.5;
+  z-index: 0;
+  pointer-events: none;
+}
+
 /* ================================
    Highlight Layers
 ================================== */
@@ -155,7 +171,7 @@ button:hover {
 
 .fret.root-highlight::before {
   background-color: #e74c3c;
-  box-shadow: 0 0 12px #e74c3c;
+  box-shadow: 0 0 10px #e74c3c;
 }
 
 .fret.scale-highlight::before {
@@ -367,4 +383,5 @@ input.active-beat {
     box-sizing: border-box;
   }
 }
+
 

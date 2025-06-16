@@ -18,6 +18,8 @@
   <label>Highlight Root: <input type="checkbox" id="highlightRootToggle"/></label>
   <label>Scale: <select id="scaleSelect"></select></label>
   <label>Show All Notes: <input type="checkbox" id="showAllNotesToggle"/></label>
+  <label>Pitch Colors: <input type="checkbox" id="pitchColorsToggle" /></label>
+
 </div>
 <div class="fretboard-wrapper">
   <div class="fretboard" id="fretboard"></div>
@@ -34,7 +36,7 @@
 		<option value="notes">Note Set</option>
 	  </select>
 	</label>
-    <div id="analysisOutput">Select notes to see matching scales.</div>
+    <div id="analysisOutput"></div>
   </div>
   <div class="metronome-panel">
     <h1>Metro Gnome</h1>
@@ -59,7 +61,7 @@
   </div>
 </div>
 <h1>How To Use</h1>
-<p>Fret Boar is an interactive tool to help fretted instrument players learn and practice. The fretboard is interactive and responsive to the settings. Simply tap/click on some notes, or enter them in the "Highlight Notes" to have them appear on the fretboard. Select a scale from the dropdown or analysis output to highlight every note of the scale on the fretboard.</p>
+<p>Fret Boar is an interactive tool to help fretted instrument players learn and practice. Simply tap/click on some notes, or enter them in the "Highlight Notes" to have them appear on the fretboard. The fretboard is interactive and responsive to the settings. Select a scale from the dropdown or analysis output to highlight every note of the scale on the fretboard.</p>
 <p>Metro Gnome is a fully functional metronome, and integrates with Fret Boar to sequence the fretboard visually and/or audibly. "Add Measure" can be used to create sequences of different rhythms with different time signatures and tempos, looping through the measures. Each beat can have its frequency set, or you can have it match the frequency of the synchronized note on the fretboard.</p>
 <div id="footerBanner">
   <a href="https://necrosato.github.io/metrognome" target="_blank" rel="noopener noreferrer">

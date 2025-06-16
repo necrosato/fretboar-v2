@@ -9,6 +9,13 @@ const noteMap = {
 };
 const noteNames = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
 
+const pitchColors = {
+      "C": "#e6194b",  "C#": "#f58231", "D": "#ffe119",
+      "D#": "#bfef45", "E": "#3cb44b",  "F": "#42d4f4",
+      "F#": "#4363d8", "G": "#911eb4",  "G#": "#f032e6",
+      "A": "#a9a9a9",  "A#": "#fabebe", "B": "#ffd8b1"
+};
+
 function getNoteName(i) {
   return noteNames[i % 12];
 }
@@ -45,6 +52,7 @@ function renderFretboard() {
   const scaleName = document.getElementById('scaleSelect').value;
   const showAll = document.getElementById('showAllNotesToggle').checked;
   const highlightRootToggle = document.getElementById('highlightRootToggle').checked;
+  const pitchToggle = document.getElementById('pitchColorsToggle').checked;
   
   const rootVal = noteMap[scaleRootName] ?? '';
 
@@ -104,14 +112,22 @@ function renderFretboard() {
         div.textContent = noteName;
       }
 
-      if (window.playCount > 0 && noteName == metroNote && metroSync != 'none') {
-        div.classList.add('metro-highlight');
+      let pitchHighlight = (div, note, cname)=>{
+		  div.classList.add(cname);
+          if (pitchToggle) {
+			div.classList.add('ring');
+			div.style.setProperty('--ring-color', pitchColors[note]);
+          }
+      };
+	  console.log(metroSync);
+      if (window.playCount > 0 && noteName == window.metroNote) {
+        pitchHighlight(div, noteName, 'metro-highlight');
       } else if (isRoot && highlightRootToggle) {
-        div.classList.add('root-highlight');
+        pitchHighlight(div, noteName, 'root-highlight');
       } else if (isUserHighlight) {
-        div.classList.add('highlight');
+        pitchHighlight(div, noteName, 'highlight');
       } else if (isScale) {
-        div.classList.add('scale-highlight');
+        pitchHighlight(div, noteName, 'scale-highlight');
       }
 
       div.addEventListener('pointerup', () => {
@@ -139,12 +155,7 @@ function renderFretboard() {
     D.textContent = f;
     lb.appendChild(D);
   }
-
-  if (highlightNotes.length > 0) {
-    analyzeHighlightedNotes();
-  } else {
-    document.getElementById('analysisOutput').textContent = "Select notes to see scale analysis automatically.";
-  }
+  analyzeHighlightedNotes();
 }
 
 function analyzeHighlightedNotes() {
@@ -152,7 +163,7 @@ function analyzeHighlightedNotes() {
   const highlightedNotes = new Set(parseNotes(document.getElementById('notesInput').value));
 
   if (highlightedNotes.size === 0) {
-    output.textContent = "No highlighted notes selected.";
+    output.textContent = "No highlighted notes selected. Select notes to see scale analysis automatically.";
     return;
   }
 
@@ -230,15 +241,11 @@ function analyzeHighlightedNotes() {
 
 populateSelectors();
 renderFretboard();
-document.getElementById('groupBySelect')?.addEventListener('change', analyzeHighlightedNotes);
 
-['notesInput','scaleRootSelect','scaleSelect','tuningInput','fretsInput','highlightRootToggle','showAllNotesToggle'].forEach(id => {
+['notesInput','scaleRootSelect','scaleSelect','tuningInput','fretsInput','highlightRootToggle','showAllNotesToggle','pitchColorsToggle','groupBySelect'].forEach(id => {
   const el = document.getElementById(id);
   if (!el) return;
-  const eventType = (id === 'notesInput') ? 'input' : (id === 'highlightRootToggle' || id === 'showAllNotesToggle' || id === 'scaleRootSelect' || id === 'scaleSelect') ? 'change' : 'input';
-  el.addEventListener(eventType, () => {
+  el.addEventListener('change', () => {
     renderFretboard();
-    if (id === 'notesInput') analyzeHighlightedNotes();
   });
 });
-

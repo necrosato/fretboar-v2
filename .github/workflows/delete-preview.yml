@@ -1,0 +1,17 @@
+name: Delete Preview
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  delete-preview:
+    runs-on: self-hosted
+
+    steps:
+      - name: Remove preview directory
+        run: |
+          REPO=$(basename "${{ github.repository }}")
+          BRANCH="${{ github.head_ref }}"
+          PREVIEW_DIR="/var/www/preview/${REPO}/${BRANCH}"
+          sudo rm -rf "$PREVIEW_DIR"

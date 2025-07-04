@@ -28,7 +28,7 @@ jobs:
       - name: Post PR comment with preview link
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.ACTION_RUNNER }}
           script: |
             const repo = context.repo.repo;
             const branch = context.payload.pull_request.head.ref;

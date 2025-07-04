@@ -248,3 +248,48 @@ renderFretboard();
     renderFretboard();
   });
 });
+
+// Mobile pinch-to-zoom for fretboard only
+const fbWrapper = document.querySelector('.fretboard-wrapper');
+let zoomScale = 1;
+let startDist = 0;
+let startZoom = 1;
+const activePointers = new Map();
+
+function pointerDistance(p1, p2) {
+  const dx = p2.clientX - p1.clientX;
+  const dy = p2.clientY - p1.clientY;
+  return Math.hypot(dx, dy);
+}
+
+fbWrapper.addEventListener('pointerdown', e => {
+  activePointers.set(e.pointerId, e);
+  if (activePointers.size === 2) {
+    const pts = Array.from(activePointers.values());
+    startDist = pointerDistance(pts[0], pts[1]);
+    startZoom = zoomScale;
+  }
+});
+
+fbWrapper.addEventListener('pointermove', e => {
+  if (!activePointers.has(e.pointerId)) return;
+  activePointers.set(e.pointerId, e);
+  if (activePointers.size === 2) {
+    e.preventDefault();
+    const pts = Array.from(activePointers.values());
+    const dist = pointerDistance(pts[0], pts[1]);
+    zoomScale = Math.min(Math.max(startZoom * dist / startDist, 1), 3);
+    fbWrapper.style.transformOrigin = '0 0';
+    fbWrapper.style.transform = `scale(${zoomScale})`;
+  }
+});
+
+function endPointer(e) {
+  activePointers.delete(e.pointerId);
+  if (activePointers.size < 2) {
+    startDist = 0;
+  }
+}
+['pointerup', 'pointercancel', 'pointerleave'].forEach(type => {
+  fbWrapper.addEventListener(type, endPointer);
+});

@@ -71,6 +71,7 @@ button:hover {
   overflow-x: auto;
   max-width: 100%;
   margin-bottom: 1rem;
+  touch-action: pan-x pan-y;
 }
 
 .fretboard {

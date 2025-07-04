@@ -71,7 +71,12 @@ function renderFretboard() {
   const strings = tuningNotes.slice().reverse();
 
   fb.innerHTML = '';
-  fb.style.gridTemplateColumns = `repeat(${frets},90px)`;
+  const containerWidth = fb.parentElement?.clientWidth || window.innerWidth;
+  const fretWidth = Math.max(
+        minFretWidth,
+        Math.min(maxFretWidth, Math.floor(containerWidth / frets))
+  );
+  fb.style.gridTemplateColumns = `repeat(${frets},${fretWidth}px)`;
   fb.style.gridTemplateRows = `repeat(${strings.length},50px)`;
 
   document.querySelectorAll('.string-line').forEach(e => e.remove());
@@ -95,7 +100,6 @@ function renderFretboard() {
       const noteName = getNoteName(noteIndex);
       const div = document.createElement('div');
       div.className = 'fret';
-      const fretWidth = maxFretWidth - ((maxFretWidth - minFretWidth)/frets);
       div.style.width = fretWidth;
       div.dataset.fret = f;
       div.dataset.note = noteName;
@@ -148,7 +152,7 @@ function renderFretboard() {
   }
 
   lb.innerHTML = '';
-  lb.style.gridTemplateColumns = `repeat(${frets},90px)`;
+  lb.style.gridTemplateColumns = `repeat(${frets},${fretWidth}px)`;
   for (let f = 0; f < frets; f++) {
     const D = document.createElement('div');
     D.textContent = f;

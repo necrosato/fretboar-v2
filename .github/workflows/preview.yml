@@ -1,0 +1,42 @@
+name: Build and Deploy Preview
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  deploy-preview:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build site (or skip if static)
+        run: |
+          echo "Assuming static HTML/CSS"
+          # npm run build or similar if needed
+
+      - name: Copy to preview directory
+        run: |
+          REPO=$(basename "${{ github.repository }}")
+          BRANCH="${{ github.head_ref }}"
+          PREVIEW_DIR="/var/www/preview/${REPO}/${BRANCH}"
+          sudo mkdir -p "$PREVIEW_DIR"
+          sudo cp -r * "$PREVIEW_DIR"
+
+      - name: Post PR comment with preview link
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const repo = context.repo.repo;
+            const branch = context.payload.pull_request.head.ref;
+            const baseUrl = "http://ec2.taila0b5a.ts.net/";
+            const url = `${baseUrl}/preview/${repo}/${branch}/`;
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo,
+              body: `🔍 Preview available: [${branch}](${url})`
+            });

@@ -72,7 +72,7 @@ function renderFretboard() {
 
   fb.innerHTML = '';
   const fretWidth = maxFretWidth - ((maxFretWidth - minFretWidth)/frets);
-  fb.style.gridTemplateColumns = `repeat(${frets},90px)`;
+  fb.style.gridTemplateColumns = `repeat(${frets}, ${fretWidth}px)`;
   fb.style.gridTemplateRows = `repeat(${strings.length},50px)`;
 
   document.querySelectorAll('.string-line').forEach(e => e.remove());
@@ -96,7 +96,7 @@ function renderFretboard() {
       const noteName = getNoteName(noteIndex);
       const div = document.createElement('div');
       div.className = 'fret';
-      div.style.width = fretWidth;
+      div.style.width = `${fretWidth}px`;
       div.dataset.fret = f;
       div.dataset.note = noteName;
       div.dataset.string = s;
@@ -148,13 +148,14 @@ function renderFretboard() {
   }
 
   lb.innerHTML = '';
-  lb.style.gridTemplateColumns = `repeat(${frets},90px)`;
+  lb.style.gridTemplateColumns = `repeat(${frets}, ${fretWidth}px)`;
   for (let f = 0; f < frets; f++) {
     const D = document.createElement('div');
     D.textContent = f;
     lb.appendChild(D);
   }
   analyzeHighlightedNotes();
+  applyZoom();
 }
 
 function analyzeHighlightedNotes() {
@@ -240,6 +241,7 @@ function analyzeHighlightedNotes() {
 
 populateSelectors();
 renderFretboard();
+applyZoom();
 
 ['notesInput','scaleRootSelect','scaleSelect','tuningInput','fretsInput','highlightRootToggle','showAllNotesToggle','pitchColorsToggle','groupBySelect'].forEach(id => {
   const el = document.getElementById(id);
@@ -247,4 +249,62 @@ renderFretboard();
   el.addEventListener('change', () => {
     renderFretboard();
   });
+});
+
+// Mobile pinch-to-zoom for fretboard only
+const fbWrapper = document.querySelector('.fretboard-wrapper');
+const baseMargin = parseFloat(getComputedStyle(fbWrapper).marginBottom) || 0;
+let zoomScale = 1;
+let startDist = 0;
+let startZoom = 1;
+const activePointers = new Map();
+
+function applyZoom() {
+  const frets = parseInt(document.getElementById('fretsInput').value, 10) + 1;
+  const fretWidth = (maxFretWidth - ((maxFretWidth - minFretWidth)/frets)) * zoomScale;
+  const fb = document.getElementById('fretboard');
+  const lb = document.getElementById('labels');
+  fb.style.gridTemplateColumns = `repeat(${frets}, ${fretWidth}px)`;
+  lb.style.gridTemplateColumns = `repeat(${frets}, ${fretWidth}px)`;
+  fb.querySelectorAll('.fret').forEach(div => {
+    div.style.width = `${fretWidth}px`;
+  });
+  fbWrapper.style.marginBottom = `${baseMargin * zoomScale}px`;
+}
+
+function pointerDistance(p1, p2) {
+  const dx = p2.clientX - p1.clientX;
+  const dy = p2.clientY - p1.clientY;
+  return Math.hypot(dx, dy);
+}
+
+fbWrapper.addEventListener('pointerdown', e => {
+  activePointers.set(e.pointerId, e);
+  if (activePointers.size === 2) {
+    const pts = Array.from(activePointers.values());
+    startDist = pointerDistance(pts[0], pts[1]);
+    startZoom = zoomScale;
+  }
+});
+
+fbWrapper.addEventListener('pointermove', e => {
+  if (!activePointers.has(e.pointerId)) return;
+  activePointers.set(e.pointerId, e);
+  if (activePointers.size === 2) {
+    e.preventDefault();
+    const pts = Array.from(activePointers.values());
+    const dist = pointerDistance(pts[0], pts[1]);
+    zoomScale = Math.min(Math.max(startZoom * dist / startDist, 0.5), 3);
+    applyZoom();
+  }
+});
+
+function endPointer(e) {
+  activePointers.delete(e.pointerId);
+  if (activePointers.size < 2) {
+    startDist = 0;
+  }
+}
+['pointerup', 'pointercancel', 'pointerleave'].forEach(type => {
+  fbWrapper.addEventListener(type, endPointer);
 });

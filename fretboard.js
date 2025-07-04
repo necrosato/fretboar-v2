@@ -71,6 +71,7 @@ function renderFretboard() {
   const strings = tuningNotes.slice().reverse();
 
   fb.innerHTML = '';
+  const fretWidth = maxFretWidth - ((maxFretWidth - minFretWidth)/frets);
   fb.style.gridTemplateColumns = `repeat(${frets},90px)`;
   fb.style.gridTemplateRows = `repeat(${strings.length},50px)`;
 
@@ -95,7 +96,6 @@ function renderFretboard() {
       const noteName = getNoteName(noteIndex);
       const div = document.createElement('div');
       div.className = 'fret';
-      const fretWidth = maxFretWidth - ((maxFretWidth - minFretWidth)/frets);
       div.style.width = fretWidth;
       div.dataset.fret = f;
       div.dataset.note = noteName;

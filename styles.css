@@ -384,4 +384,15 @@ input.active-beat {
   }
 }
 
+@media (max-width: 400px) {
+  .controls input[type="text"],
+  .controls select {
+    width: 100%;
+  }
+
+  #footerBanner {
+    position: static;
+  }
+}
+
 

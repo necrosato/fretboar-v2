@@ -251,6 +251,7 @@ renderFretboard();
 
 // Mobile pinch-to-zoom for fretboard only
 const fbWrapper = document.querySelector('.fretboard-wrapper');
+const baseMargin = parseFloat(getComputedStyle(fbWrapper).marginBottom) || 0;
 let zoomScale = 1;
 let startDist = 0;
 let startZoom = 1;
@@ -281,6 +282,7 @@ fbWrapper.addEventListener('pointermove', e => {
     zoomScale = Math.min(Math.max(startZoom * dist / startDist, 0.5), 3);
     fbWrapper.style.transformOrigin = '0 0';
     fbWrapper.style.transform = `scale(${zoomScale})`;
+    fbWrapper.style.marginBottom = `${baseMargin * zoomScale}px`;
   }
 });
 

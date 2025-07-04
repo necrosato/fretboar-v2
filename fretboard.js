@@ -278,7 +278,7 @@ fbWrapper.addEventListener('pointermove', e => {
     e.preventDefault();
     const pts = Array.from(activePointers.values());
     const dist = pointerDistance(pts[0], pts[1]);
-    zoomScale = Math.min(Math.max(startZoom * dist / startDist, 1), 3);
+    zoomScale = Math.min(Math.max(startZoom * dist / startDist, 0.5), 3);
     fbWrapper.style.transformOrigin = '0 0';
     fbWrapper.style.transform = `scale(${zoomScale})`;
   }

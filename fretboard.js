@@ -7,7 +7,10 @@ const noteMap = {
   "E": 4, "FB": 4, "F": 5, "F#": 6, "GB": 6,
   "G": 7, "G#": 8, "AB": 8, "A": 9, "A#": 10, "BB": 10, "B": 11, "CB": 11
 };
+window.noteMap = noteMap;
 const noteNames = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+window.noteNames = noteNames;
+window.scales = scales;
 
 const pitchColors = {
       "C": "#e6194b",  "C#": "#f58231", "D": "#ffe119",
@@ -19,11 +22,143 @@ const pitchColors = {
 function getNoteName(i) {
   return noteNames[i % 12];
 }
+window.getNoteName = getNoteName;
 
 function parseNotes(input) {
   return input.toUpperCase().split(/[\s,]+/)
     .map(n => noteMap[n] != null ? getNoteName(noteMap[n]) : null)
     .filter(Boolean);
+}
+
+const patternState = {
+  activePatternId: ''
+};
+
+function updatePatternStatus(message) {
+  const statusEl = document.getElementById('patternStatus');
+  if (!statusEl) return;
+  statusEl.textContent = message || '';
+}
+
+function clearPatternSelection() {
+  patternState.activePatternId = '';
+  const select = document.getElementById('patternSelect');
+  if (select) select.value = '';
+  updatePatternStatus('');
+}
+
+function getFretboardContext() {
+  const tuningInput = document.getElementById('tuningInput')?.value.trim().toUpperCase() || '';
+  const tuningNotes = tuningInput.split(/\s+/).map(n => noteMap[n] ?? 4);
+
+  const fretsInput = parseInt(document.getElementById('fretsInput')?.value, 10);
+  const fretCount = (Number.isFinite(fretsInput) ? fretsInput : 24) + 1;
+
+  const scaleRootName = document.getElementById('scaleRootSelect')?.value.toUpperCase() || '';
+  const scaleName = document.getElementById('scaleSelect')?.value || '';
+  const rootValue = noteMap[scaleRootName];
+  const scaleIntervals = scaleName && scales[scaleName] ? scales[scaleName] : undefined;
+  const scaleNotes = scaleIntervals && rootValue != null
+    ? scaleIntervals.map(interval => getNoteName((rootValue + interval) % 12))
+    : [];
+  const scaleSet = new Set(scaleNotes);
+
+  const startFretValue = parseInt(document.getElementById('patternStartFret')?.value, 10);
+  const startFret = Number.isFinite(startFretValue) ? startFretValue : 0;
+
+  return {
+    tuningNotes,
+    fretCount,
+    scaleName,
+    scaleRootName,
+    scaleIntervals,
+    scaleNotes,
+    scaleSet,
+    rootValue,
+    startFret
+  };
+}
+window.getFretboardContext = getFretboardContext;
+
+function syncPatternStartFretMax() {
+  const patternStartInput = document.getElementById('patternStartFret');
+  if (!patternStartInput) return;
+  const context = getFretboardContext();
+  const max = Math.max((context.fretCount || 1) - 1, 0);
+  patternStartInput.max = max;
+}
+
+function populatePatternSelect() {
+  const select = document.getElementById('patternSelect');
+  if (!select) return;
+
+  const patterns = Array.isArray(window.patternLibrary) ? window.patternLibrary : [];
+  select.innerHTML = '';
+
+  const noneOption = document.createElement('option');
+  noneOption.value = '';
+  noneOption.textContent = '--None--';
+  select.appendChild(noneOption);
+
+  patterns.forEach(pattern => {
+    if (!pattern || !pattern.id) return;
+    const option = document.createElement('option');
+    option.value = pattern.id;
+    option.textContent = pattern.name || pattern.id;
+    if (pattern.description) option.title = pattern.description;
+    select.appendChild(option);
+  });
+}
+
+function applyActivePattern() {
+  const patternId = patternState.activePatternId;
+  const notesInputEl = document.getElementById('notesInput');
+  if (!notesInputEl) return;
+
+  if (!patternId) {
+    updatePatternStatus('');
+    renderFretboard();
+    return;
+  }
+
+  const patterns = Array.isArray(window.patternLibrary) ? window.patternLibrary : [];
+  const pattern = patterns.find(p => p?.id === patternId);
+  if (!pattern || typeof pattern.generator !== 'function') {
+    updatePatternStatus('Selected pattern is unavailable.');
+    renderFretboard();
+    return;
+  }
+
+  const context = getFretboardContext();
+  const result = pattern.generator(context) || {};
+
+  if (result.error) {
+    updatePatternStatus(result.error);
+    renderFretboard();
+    return;
+  }
+
+  if (Array.isArray(result.notes)) {
+    notesInputEl.value = result.notes.join(' ');
+  }
+
+  const message = result.message || pattern.description || '';
+  updatePatternStatus(message);
+
+  renderFretboard();
+}
+
+function handleControlChange(event) {
+  syncPatternStartFretMax();
+  if (event?.target?.id === 'notesInput' && patternState.activePatternId) {
+    clearPatternSelection();
+  }
+
+  if (patternState.activePatternId) {
+    applyActivePattern();
+  } else {
+    renderFretboard();
+  }
 }
 
 function populateSelectors() {
@@ -43,25 +178,18 @@ function getScaleNotes(rootVal, scaleIntervals) {
 function renderFretboard() {
   const fb = document.getElementById('fretboard');
   const lb = document.getElementById('labels');
-  const tuningInput = document.getElementById('tuningInput').value.trim().toUpperCase();
-  const tuningNotes = tuningInput.split(/\s+/).map(n => noteMap[n] ?? 4);
-  const frets = parseInt(document.getElementById('fretsInput').value, 10) + 1;
+  const context = getFretboardContext();
+  const tuningNotes = context.tuningNotes || [];
+  const frets = Math.max(context.fretCount || 0, 1);
   const notesInputEl = document.getElementById('notesInput');
   const highlightNotes = parseNotes(notesInputEl.value);
-  const scaleRootName = document.getElementById('scaleRootSelect').value.toUpperCase();
-  const scaleName = document.getElementById('scaleSelect').value;
   const showAll = document.getElementById('showAllNotesToggle').checked;
   const highlightRootToggle = document.getElementById('highlightRootToggle').checked;
   const pitchToggle = document.getElementById('pitchColorsToggle').checked;
-  
-  const rootVal = noteMap[scaleRootName] ?? '';
 
-  let scaleSet = new Set();
-  let scaleNotes = [];
-  if (scaleName && scales[scaleName]) {
-    scaleNotes = scales[scaleName].map(interval => getNoteName((rootVal + interval) % 12));
-    scaleSet = new Set(scaleNotes);
-  }
+  const rootVal = context.rootValue ?? '';
+  const scaleNotes = context.scaleNotes || [];
+  const scaleSet = new Set(scaleNotes);
 
   const highlightsSet = new Set(highlightNotes.map(n => n.toUpperCase()));
   if (scaleSet.size) {
@@ -71,7 +199,7 @@ function renderFretboard() {
   const strings = tuningNotes.slice().reverse();
 
   fb.innerHTML = '';
-  const fretWidth = maxFretWidth - ((maxFretWidth - minFretWidth)/frets);
+  const fretWidth = maxFretWidth - ((maxFretWidth - minFretWidth) / frets);
   fb.style.gridTemplateColumns = `repeat(${frets},90px)`;
   fb.style.gridTemplateRows = `repeat(${strings.length},50px)`;
 
@@ -80,14 +208,14 @@ function renderFretboard() {
     const line = document.createElement('div');
     line.className = 'string-line';
     line.style.top = `${(i + 0.5) * 50}px`;
-    line.style.height = `${i*.3+1}px`;
+    line.style.height = `${i * .3 + 1}px`;
     fb.appendChild(line);
   });
 
   const metroSync = document.getElementById('metroSyncSelect')?.value || 'none';
-  window.metroNote = metroSync === 'active' ? 
-        highlightNotes[(window.playCount-1) % highlightNotes.length] :
-        metroSync === 'scale' ? scaleNotes[(window.playCount-1) % scaleNotes.length] : undefined;
+  window.metroNote = metroSync === 'active'
+    ? highlightNotes[(window.playCount - 1) % highlightNotes.length]
+    : metroSync === 'scale' ? scaleNotes[(window.playCount - 1) % scaleNotes.length] : undefined;
 
   for (let s = 0; s < strings.length; s++) {
     for (let f = 0; f < frets; f++) {
@@ -112,14 +240,14 @@ function renderFretboard() {
         div.textContent = noteName;
       }
 
-      let pitchHighlight = (div, note, cname)=>{
-		  div.classList.add(cname);
-          if (pitchToggle) {
-			div.classList.add('ring');
-			div.style.setProperty('--ring-color', pitchColors[note]);
-          }
+      const pitchHighlight = (target, note, className) => {
+        target.classList.add(className);
+        if (pitchToggle) {
+          target.classList.add('ring');
+          target.style.setProperty('--ring-color', pitchColors[note]);
+        }
       };
-      if (window.playCount > 0 && noteName == window.metroNote) {
+      if (window.playCount > 0 && noteName === window.metroNote) {
         pitchHighlight(div, noteName, 'metro-highlight');
       } else if (isRoot && highlightRootToggle) {
         pitchHighlight(div, noteName, 'root-highlight');
@@ -130,7 +258,10 @@ function renderFretboard() {
       }
 
       div.addEventListener('pointerup', () => {
-        let currentNotes = parseNotes(notesInputEl.value);
+        if (patternState.activePatternId) {
+          clearPatternSelection();
+        }
+        const currentNotes = parseNotes(notesInputEl.value);
         const clickedNote = noteName;
         const index = currentNotes.indexOf(clickedNote);
         if (index !== -1) {
@@ -239,12 +370,28 @@ function analyzeHighlightedNotes() {
 }
 
 populateSelectors();
+populatePatternSelect();
+syncPatternStartFretMax();
 renderFretboard();
 
-['notesInput','scaleRootSelect','scaleSelect','tuningInput','fretsInput','highlightRootToggle','showAllNotesToggle','pitchColorsToggle','groupBySelect'].forEach(id => {
+['notesInput','scaleRootSelect','scaleSelect','tuningInput','fretsInput','highlightRootToggle','showAllNotesToggle','pitchColorsToggle','groupBySelect','patternStartFret'].forEach(id => {
   const el = document.getElementById(id);
   if (!el) return;
-  el.addEventListener('change', () => {
-    renderFretboard();
+  el.addEventListener('change', (event) => {
+    handleControlChange(event);
   });
 });
+
+const patternSelectEl = document.getElementById('patternSelect');
+if (patternSelectEl) {
+  patternSelectEl.addEventListener('change', (event) => {
+    const value = event.target.value;
+    if (!value) {
+      clearPatternSelection();
+      renderFretboard();
+      return;
+    }
+    patternState.activePatternId = value;
+    applyActivePattern();
+  });
+}

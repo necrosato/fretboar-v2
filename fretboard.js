@@ -289,7 +289,7 @@ if (satoModeButton) {
   const body = document.body;
   const updateSatoModeButton = () => {
     const engaged = body.classList.contains('sato-mode-engaged');
-    satoModeButton.textContent = engaged ? 'Sato Mode: Engaged' : 'Sato Mode';
+    satoModeButton.textContent = engaged ? 'Engaged' : 'Sato Mode';
     satoModeButton.classList.toggle('engaged', engaged);
     satoModeButton.setAttribute('aria-pressed', engaged ? 'true' : 'false');
   };

@@ -19,8 +19,13 @@
   <label>Highlight Root: <input type="checkbox" id="highlightRootToggle"/></label>
   <label>Scale: <select id="scaleSelect"></select></label>
   <label>Show All Notes: <input type="checkbox" id="showAllNotesToggle"/></label>
-  <label>Pitch Colors: <input type="checkbox" id="pitchColorsToggle" /></label>
-  <label>Relative Scale Colors: <input type="checkbox" id="relativeColorsToggle" /></label>
+  <label>Color Mode:
+    <select id="colorModeSelect">
+      <option value="">None</option>
+      <option value="absolute">Absolute Pitch Colors</option>
+      <option value="relative">Relative Scale Colors</option>
+    </select>
+  </label>
 
 </div>
 <div class="fretboard-wrapper">

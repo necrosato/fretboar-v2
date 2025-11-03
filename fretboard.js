@@ -53,8 +53,9 @@ function renderFretboard() {
   const scaleName = document.getElementById('scaleSelect').value;
   const showAll = document.getElementById('showAllNotesToggle').checked;
   const highlightRootToggle = document.getElementById('highlightRootToggle').checked;
-  const pitchToggle = document.getElementById('pitchColorsToggle').checked;
-  const relativeToggle = document.getElementById('relativeColorsToggle')?.checked;
+  const colorMode = document.getElementById('colorModeSelect')?.value || '';
+  const pitchColorsEnabled = colorMode !== '';
+  const relativeColorsEnabled = colorMode === 'relative';
 
   const rootVal = noteMap[scaleRootName] ?? '';
 
@@ -71,7 +72,7 @@ function renderFretboard() {
   }
 
   const scaleDegreeColorMap = new Map();
-  if (relativeToggle && scaleNotes.length) {
+  if (relativeColorsEnabled && scaleNotes.length) {
     scaleNotes.forEach((note, index) => {
       if (!scaleDegreeColorMap.has(note)) {
         scaleDegreeColorMap.set(note, scaleDegreeColors[index % scaleDegreeColors.length]);
@@ -80,8 +81,8 @@ function renderFretboard() {
   }
 
   const getRingColor = (note) => {
-    if (!pitchToggle) return null;
-    if (scaleDegreeColorMap.size && scaleDegreeColorMap.has(note)) {
+    if (!pitchColorsEnabled) return null;
+    if (relativeColorsEnabled && scaleDegreeColorMap.size && scaleDegreeColorMap.has(note)) {
       return scaleDegreeColorMap.get(note);
     }
     return pitchColors[note];
@@ -269,8 +270,7 @@ renderFretboard();
   'fretsInput',
   'highlightRootToggle',
   'showAllNotesToggle',
-  'pitchColorsToggle',
-  'relativeColorsToggle',
+  'colorModeSelect',
   'groupBySelect'
 ].forEach(id => {
   const el = document.getElementById(id);

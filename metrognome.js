@@ -156,7 +156,7 @@ class Metronome {
 
   osc.start(startTime);
   osc.stop(stopTime);
-    this.renderMeasures();
+    this.updateActiveBeatHighlight();
   }
 
   renderMeasures() {
@@ -165,6 +165,7 @@ class Metronome {
     this.sequence.forEach((measure, index) => {
       const div = document.createElement('div');
       div.className = 'measure';
+      div.dataset.measureIndex = index;
 
       const tempoInput = this.createInput(measure.tempo, 'Tempo (BPM): ', val => {
         this.sequence[index].tempo = parseInt(val, 10) || 0;
@@ -185,21 +186,21 @@ class Metronome {
 		const toneContainer = document.createElement('div');
 		toneContainer.className = 'tone-column';
 
-		for (let i = 0; i < measure.timeSignature[0]; i++) {
-		  const toneVal = measure.tones[i] ?? (i === 0 ? 880 : 440);
-		  measure.tones[i] = toneVal;
+                for (let i = 0; i < measure.timeSignature[0]; i++) {
+                  const toneVal = measure.tones[i] ?? (i === 0 ? 880 : 440);
+                  measure.tones[i] = toneVal;
 
-		  const toneInput = this.createInput(toneVal, `B${i + 1}: `, val => {
-			this.sequence[index].tones[i] = parseFloat(val) || 0;
-		  }, 60);
+                  const toneInput = this.createInput(toneVal, `B${i + 1}: `, val => {
+                        this.sequence[index].tones[i] = parseFloat(val) || 0;
+                  }, 60);
 
-		  if (this.isPlaying && index === this.currentMeasure && i === this.currentBeat) {
-			toneInput.querySelector('input').classList.add('active-beat');
-		  }
+                  const inputElement = toneInput.querySelector('input');
+                  inputElement.dataset.measureIndex = index;
+                  inputElement.dataset.beatIndex = i;
 
-		  toneContainer.appendChild(toneInput);
-		}
-		div.appendChild(toneContainer);
+                  toneContainer.appendChild(toneInput);
+                }
+                div.appendChild(toneContainer);
       const deleteButton = document.createElement('button');
       deleteButton.textContent = 'Delete';
       deleteButton.onclick = () => this.deleteMeasure(index);
@@ -207,6 +208,7 @@ class Metronome {
 
       measuresContainer.appendChild(div);
     });
+    this.updateActiveBeatHighlight();
   }
 
   createInput(value, labelText, onChange, width = 60) {
@@ -219,6 +221,21 @@ class Metronome {
     input.addEventListener('input', () => onChange(input.value));
     label.appendChild(input);
     return label;
+  }
+
+  updateActiveBeatHighlight() {
+    const inputs = document.querySelectorAll('.measure input');
+    inputs.forEach(input => input.classList.remove('active-beat'));
+
+    if (!this.isPlaying) {
+      return;
+    }
+
+    const selector = `.measure[data-measure-index="${this.currentMeasure}"] input[data-beat-index="${this.currentBeat}"]`;
+    const activeInput = document.querySelector(selector);
+    if (activeInput) {
+      activeInput.classList.add('active-beat');
+    }
   }
 }
 

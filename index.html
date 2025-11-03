@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Fretboar V2</title>
 <link rel="stylesheet" href="styles.css">
-<script src="scales.js"></script> 
+<script src="scales.js"></script>
+<script src="patterns.js" defer></script>
 <script src="fretboard.js" defer></script>
 <script src="metrognome.js" defer></script>
 </head>
@@ -20,8 +21,11 @@
   <label>Scale: <select id="scaleSelect"></select></label>
   <label>Show All Notes: <input type="checkbox" id="showAllNotesToggle"/></label>
   <label>Pitch Colors: <input type="checkbox" id="pitchColorsToggle" /></label>
+  <label>Pattern: <select id="patternSelect"></select></label>
+  <label>Pattern Start Fret: <input id="patternStartFret" type="number" value="0" min="0" max="24" /></label>
 
 </div>
+<div id="patternStatus" class="pattern-status"></div>
 <div class="fretboard-wrapper">
   <div class="fretboard" id="fretboard"></div>
   <div class="labels" id="labels"></div>

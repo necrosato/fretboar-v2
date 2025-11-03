@@ -38,6 +38,20 @@ button:hover {
   margin-bottom: 1rem;
 }
 
+.controls label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.controls .advanced-control {
+  display: none;
+}
+
+body.sato-mode-engaged .controls .advanced-control {
+  display: inline-flex;
+}
+
 .controls input,
 .controls select,
 .controls button,
@@ -241,6 +255,11 @@ button:hover {
   bottom: 0;
   left: 0;
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
   background: #222;
   color: #eee;
   text-align: center;
@@ -254,6 +273,29 @@ button:hover {
 #footerBanner a {
   color: #4CAF50;
   text-decoration: none;
+}
+
+#footerBanner .footer-links {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+#footerBanner button {
+  background: #333;
+  border: 1px solid #4CAF50;
+  color: #4CAF50;
+}
+
+#satoModeButton {
+  width: 120px;
+}
+
+#satoModeButton.engaged,
+body.sato-mode-engaged #satoModeButton {
+  background: #4CAF50;
+  border-color: #81C784;
+  color: #111;
 }
 
 #footerBanner a:hover {

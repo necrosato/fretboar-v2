@@ -283,3 +283,21 @@ renderFretboard();
     renderFretboard();
   });
 });
+
+const satoModeButton = document.getElementById('satoModeButton');
+if (satoModeButton) {
+  const body = document.body;
+  const updateSatoModeButton = () => {
+    const engaged = body.classList.contains('sato-mode-engaged');
+    satoModeButton.textContent = engaged ? 'Engaged' : 'Sato Mode';
+    satoModeButton.classList.toggle('engaged', engaged);
+    satoModeButton.setAttribute('aria-pressed', engaged ? 'true' : 'false');
+  };
+
+  satoModeButton.addEventListener('click', () => {
+    body.classList.toggle('sato-mode-engaged');
+    updateSatoModeButton();
+  });
+
+  updateSatoModeButton();
+}

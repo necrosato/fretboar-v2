@@ -13,13 +13,13 @@
 <h1>Fret Boar</h1>
 <div class="controls">
   <label>Tuning: <input id="tuningInput" type="text" value="E A D G B E" /></label>
-  <label>Frets: <input id="fretsInput" type="number" value="24" min="1" max="30" /></label>
+  <label class="advanced-control">Frets: <input id="fretsInput" type="number" value="24" min="1" max="30" /></label>
   <label>Highlight Notes: <input id="notesInput" type="text" value="" /></label>
   <label>Scale Root: <select id="scaleRootSelect"></select></label>
-  <label>Highlight Root: <input type="checkbox" id="highlightRootToggle"/></label>
+  <label class="advanced-control">Highlight Root: <input type="checkbox" id="highlightRootToggle"/></label>
   <label>Scale: <select id="scaleSelect"></select></label>
-  <label>Show All Notes: <input type="checkbox" id="showAllNotesToggle"/></label>
-  <label>Color Mode:
+  <label class="advanced-control">Show All Notes: <input type="checkbox" id="showAllNotesToggle"/></label>
+  <label class="advanced-control">Color Mode:
     <select id="colorModeSelect">
       <option value="">None</option>
       <option value="absolute">Absolute Pitch Colors</option>
@@ -71,17 +71,20 @@
 <p>Fret Boar is an interactive tool to help fretted instrument players learn and practice. Simply tap/click on some notes, or enter them in the "Highlight Notes" to have them appear on the fretboard. The fretboard is interactive and responsive to the settings. Select a scale from the dropdown or analysis output to highlight every note of the scale on the fretboard.</p>
 <p>Metro Gnome is a fully functional metronome, and integrates with Fret Boar to sequence the fretboard visually and/or audibly. "Add Measure" can be used to create sequences of different rhythms with different time signatures and tempos, looping through the measures. Each beat can have its frequency set, or you can have it match the frequency of the synchronized note on the fretboard.</p>
 <div id="footerBanner">
-  <a href="https://necrosato.github.io/metrognome" target="_blank" rel="noopener noreferrer">
-    Metro Gnome V1
-  </a>
- - 
-  <a href="https://necrosato.github.io/fretboar" target="_blank" rel="noopener noreferrer">
-    Fret Boar V1
-  </a>
- - 
-  <a href="https://necrosato.github.io/pianotroll" target="_blank" rel="noopener noreferrer">
-    Piano Troll V1
-  </a>
+  <div class="footer-links">
+    <a href="https://necrosato.github.io/metrognome" target="_blank" rel="noopener noreferrer">
+      Metro Gnome V1
+    </a>
+    <span>-</span>
+    <a href="https://necrosato.github.io/fretboar" target="_blank" rel="noopener noreferrer">
+      Fret Boar V1
+    </a>
+    <span>-</span>
+    <a href="https://necrosato.github.io/pianotroll" target="_blank" rel="noopener noreferrer">
+      Piano Troll V1
+    </a>
+  </div>
+  <button id="satoModeButton" type="button" aria-pressed="false">Sato Mode</button>
 </div>
 
 </body>

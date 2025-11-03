@@ -15,6 +15,7 @@ const pitchColors = {
       "F#": "#4363d8", "G": "#911eb4",  "G#": "#f032e6",
       "A": "#a9a9a9",  "A#": "#fabebe", "B": "#ffd8b1"
 };
+const scaleDegreeColors = Object.values(pitchColors);
 
 function getNoteName(i) {
   return noteNames[i % 12];
@@ -52,8 +53,10 @@ function renderFretboard() {
   const scaleName = document.getElementById('scaleSelect').value;
   const showAll = document.getElementById('showAllNotesToggle').checked;
   const highlightRootToggle = document.getElementById('highlightRootToggle').checked;
-  const pitchToggle = document.getElementById('pitchColorsToggle').checked;
-  
+  const colorMode = document.getElementById('colorModeSelect')?.value || '';
+  const pitchColorsEnabled = colorMode !== '';
+  const relativeColorsEnabled = colorMode === 'relative';
+
   const rootVal = noteMap[scaleRootName] ?? '';
 
   let scaleSet = new Set();
@@ -67,6 +70,23 @@ function renderFretboard() {
   if (scaleSet.size) {
     highlightsSet.forEach(note => scaleSet.add(note));
   }
+
+  const scaleDegreeColorMap = new Map();
+  if (relativeColorsEnabled && scaleNotes.length) {
+    scaleNotes.forEach((note, index) => {
+      if (!scaleDegreeColorMap.has(note)) {
+        scaleDegreeColorMap.set(note, scaleDegreeColors[index % scaleDegreeColors.length]);
+      }
+    });
+  }
+
+  const getRingColor = (note) => {
+    if (!pitchColorsEnabled) return null;
+    if (relativeColorsEnabled && scaleDegreeColorMap.size && scaleDegreeColorMap.has(note)) {
+      return scaleDegreeColorMap.get(note);
+    }
+    return pitchColors[note];
+  };
 
   const strings = tuningNotes.slice().reverse();
 
@@ -113,10 +133,11 @@ function renderFretboard() {
       }
 
       let pitchHighlight = (div, note, cname)=>{
-		  div.classList.add(cname);
-          if (pitchToggle) {
-			div.classList.add('ring');
-			div.style.setProperty('--ring-color', pitchColors[note]);
+                  div.classList.add(cname);
+          const ringColor = getRingColor(note);
+          if (ringColor) {
+                        div.classList.add('ring');
+                        div.style.setProperty('--ring-color', ringColor);
           }
       };
       if (window.playCount > 0 && noteName == window.metroNote) {
@@ -241,7 +262,17 @@ function analyzeHighlightedNotes() {
 populateSelectors();
 renderFretboard();
 
-['notesInput','scaleRootSelect','scaleSelect','tuningInput','fretsInput','highlightRootToggle','showAllNotesToggle','pitchColorsToggle','groupBySelect'].forEach(id => {
+[
+  'notesInput',
+  'scaleRootSelect',
+  'scaleSelect',
+  'tuningInput',
+  'fretsInput',
+  'highlightRootToggle',
+  'showAllNotesToggle',
+  'colorModeSelect',
+  'groupBySelect'
+].forEach(id => {
   const el = document.getElementById(id);
   if (!el) return;
   el.addEventListener('change', () => {

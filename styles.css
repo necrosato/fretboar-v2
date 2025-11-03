@@ -287,6 +287,10 @@ body.sato-mode-engaged .controls .advanced-control {
   color: #4CAF50;
 }
 
+#satoModeButton {
+  width: 120px;
+}
+
 #satoModeButton.engaged,
 body.sato-mode-engaged #satoModeButton {
   background: #4CAF50;

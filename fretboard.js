@@ -305,11 +305,30 @@ if (ringColorControlsContainer) {
   });
 }
 
+const noteColorLabels = noteColorControls
+  .map(({ id }) => document.getElementById(id)?.closest('label'))
+  .filter(Boolean);
+
+const syncNoteColorLabelVisibility = () => {
+  const engaged = document.body.classList.contains('sato-mode-engaged');
+  noteColorLabels.forEach(label => {
+    if (!label) return;
+    label.style.display = engaged ? 'inline-flex' : 'none';
+    label.setAttribute('aria-hidden', engaged ? 'false' : 'true');
+  });
+};
+
 const updateRingColorSelectorsVisibility = () => {
   if (!ringColorControlsContainer) return;
   const colorModeValue = document.getElementById('colorModeSelect')?.value || '';
-  const shouldShow = colorModeValue !== '';
+  const satoEngaged = document.body.classList.contains('sato-mode-engaged');
+  const shouldShow = satoEngaged && colorModeValue !== '';
   ringColorControlsContainer.classList.toggle('hidden', !shouldShow);
+  ringColorControlsContainer.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
+  ringColorControls.forEach(({ input }) => {
+    if (!input) return;
+    input.tabIndex = shouldShow ? 0 : -1;
+  });
 };
 
 const applyRingColors = () => {
@@ -334,6 +353,7 @@ const applyNoteColors = () => {
 applyNoteColors();
 updateRingColorSelectorsVisibility();
 applyRingColors();
+syncNoteColorLabelVisibility();
 
 noteColorControls.forEach(({ id }) => {
   const el = document.getElementById(id);
@@ -380,6 +400,8 @@ if (satoModeButton) {
     satoModeButton.textContent = engaged ? 'Engaged' : 'Sato Mode';
     satoModeButton.classList.toggle('engaged', engaged);
     satoModeButton.setAttribute('aria-pressed', engaged ? 'true' : 'false');
+    syncNoteColorLabelVisibility();
+    updateRingColorSelectorsVisibility();
   };
 
   satoModeButton.addEventListener('click', () => {

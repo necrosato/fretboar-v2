@@ -1,6 +1,13 @@
 /* ================================
    Base Layout & Typography
 ================================== */
+:root {
+  --highlight-color: #f39c12;
+  --root-color: #e74c3c;
+  --scale-color: #9b59b6;
+  --metro-color: #4caf50;
+}
+
 body {
   font-family: monospace;
   background-color: #1e1e1e;
@@ -179,23 +186,23 @@ body.sato-mode-engaged .controls .advanced-control {
 }
 
 .fret.highlight::before {
-  background-color: #f39c12;
-  box-shadow: 0 0 10px #f39c12;
+  background-color: var(--highlight-color, #f39c12);
+  box-shadow: 0 0 10px var(--highlight-color, #f39c12);
 }
 
 .fret.root-highlight::before {
-  background-color: #e74c3c;
-  box-shadow: 0 0 10px #e74c3c;
+  background-color: var(--root-color, #e74c3c);
+  box-shadow: 0 0 10px var(--root-color, #e74c3c);
 }
 
 .fret.scale-highlight::before {
-  background-color: #9b59b6;
-  box-shadow: 0 0 10px #9b59b6;
+  background-color: var(--scale-color, #9b59b6);
+  box-shadow: 0 0 10px var(--scale-color, #9b59b6);
 }
 
 .fret.metro-highlight::before {
-  background-color: #4CAF50;
-  box-shadow: 0 0 10px #4CAF50;
+  background-color: var(--metro-color, #4caf50);
+  box-shadow: 0 0 10px var(--metro-color, #4caf50);
 }
 
 /* ================================
@@ -204,25 +211,25 @@ body.sato-mode-engaged .controls .advanced-control {
 .fret.open {
   font-weight: bold;
   background-color: #333;
-  border: 2px solid #f39c12;
-  box-shadow: inset 0 0 5px #f39c12;
+  border: 2px solid var(--highlight-color, #f39c12);
+  box-shadow: inset 0 0 5px var(--highlight-color, #f39c12);
   z-index: 1;
 }
 
 .fret.open.highlight {
-  box-shadow: inset 0 0 5px #f39c12;
+  box-shadow: inset 0 0 5px var(--highlight-color, #f39c12);
 }
 
 .fret.open.scale-highlight {
-  box-shadow: inset 0 0 5px #9b59b6;
+  box-shadow: inset 0 0 5px var(--scale-color, #9b59b6);
 }
 
 .fret.open.root-highlight {
-  box-shadow: inset 0 0 5px #e74c3c;
+  box-shadow: inset 0 0 5px var(--root-color, #e74c3c);
 }
 
 .fret.open.metro-highlight {
-  box-shadow: inset 0 0 5px #4CAF50;
+  box-shadow: inset 0 0 5px var(--metro-color, #4caf50);
 }
 
 /* ================================

@@ -266,6 +266,28 @@ function analyzeHighlightedNotes() {
 populateSelectors();
 renderFretboard();
 
+const noteColorControls = [
+  { id: 'highlightColorInput', variable: '--highlight-color', defaultColor: '#f39c12' },
+  { id: 'rootColorInput', variable: '--root-color', defaultColor: '#e74c3c' },
+  { id: 'scaleColorInput', variable: '--scale-color', defaultColor: '#9b59b6' },
+  { id: 'metroColorInput', variable: '--metro-color', defaultColor: '#4caf50' }
+];
+
+const applyNoteColors = () => {
+  noteColorControls.forEach(({ id, variable, defaultColor }) => {
+    const control = document.getElementById(id);
+    const value = control?.value || defaultColor;
+    document.documentElement.style.setProperty(variable, value);
+  });
+};
+applyNoteColors();
+
+noteColorControls.forEach(({ id }) => {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.addEventListener('input', applyNoteColors);
+});
+
 [
   'notesInput',
   'scaleRootSelect',

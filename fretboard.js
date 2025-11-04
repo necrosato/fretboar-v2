@@ -273,6 +273,18 @@ const noteColorControls = [
   { id: 'metroColorInput', variable: '--metro-color', defaultColor: '#4caf50' }
 ];
 
+const ringColorSelectors = noteColorControls
+  .map(({ id }) => document.getElementById(id)?.closest('label'))
+  .filter(Boolean);
+
+const updateRingColorSelectorsVisibility = () => {
+  const colorModeValue = document.getElementById('colorModeSelect')?.value || '';
+  const shouldShow = colorModeValue !== '';
+  ringColorSelectors.forEach(label => {
+    label.style.display = shouldShow ? 'inline-flex' : 'none';
+  });
+};
+
 const applyNoteColors = () => {
   noteColorControls.forEach(({ id, variable, defaultColor }) => {
     const control = document.getElementById(id);
@@ -284,6 +296,7 @@ const applyNoteColors = () => {
   });
 };
 applyNoteColors();
+updateRingColorSelectorsVisibility();
 
 noteColorControls.forEach(({ id }) => {
   const el = document.getElementById(id);
@@ -305,6 +318,9 @@ noteColorControls.forEach(({ id }) => {
   const el = document.getElementById(id);
   if (!el) return;
   el.addEventListener('change', () => {
+    if (id === 'colorModeSelect') {
+      updateRingColorSelectorsVisibility();
+    }
     renderFretboard();
   });
 });

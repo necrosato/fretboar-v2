@@ -273,15 +273,51 @@ const noteColorControls = [
   { id: 'metroColorInput', variable: '--metro-color', defaultColor: '#4caf50' }
 ];
 
-const ringColorSelectors = noteColorControls
-  .map(({ id }) => document.getElementById(id)?.closest('label'))
-  .filter(Boolean);
+const ringColorControlsContainer = document.getElementById('ringColorControls');
+const ringColorControls = [];
+
+if (ringColorControlsContainer) {
+  const heading = document.createElement('span');
+  heading.textContent = 'Ring Colors:';
+  ringColorControlsContainer.appendChild(heading);
+
+  noteNames.forEach(note => {
+    const sanitizedNote = note.replace('#', 'Sharp');
+    const controlId = `ringColor${sanitizedNote}`;
+    const label = document.createElement('label');
+    label.setAttribute('for', controlId);
+
+    const text = document.createElement('span');
+    text.textContent = note;
+    label.appendChild(text);
+
+    const input = document.createElement('input');
+    input.type = 'color';
+    input.id = controlId;
+    const defaultColor = pitchColors[note] || '#ffffff';
+    input.value = defaultColor;
+    label.appendChild(input);
+
+    input.style.setProperty('--current-color', input.value);
+
+    ringColorControlsContainer.appendChild(label);
+    ringColorControls.push({ note, input, defaultColor });
+  });
+}
 
 const updateRingColorSelectorsVisibility = () => {
+  if (!ringColorControlsContainer) return;
   const colorModeValue = document.getElementById('colorModeSelect')?.value || '';
   const shouldShow = colorModeValue !== '';
-  ringColorSelectors.forEach(label => {
-    label.style.display = shouldShow ? 'inline-flex' : 'none';
+  ringColorControlsContainer.classList.toggle('hidden', !shouldShow);
+};
+
+const applyRingColors = () => {
+  ringColorControls.forEach(({ note, input, defaultColor }) => {
+    const value = input?.value || defaultColor;
+    if (!value) return;
+    pitchColors[note] = value;
+    input?.style.setProperty('--current-color', value);
   });
 };
 
@@ -297,11 +333,20 @@ const applyNoteColors = () => {
 };
 applyNoteColors();
 updateRingColorSelectorsVisibility();
+applyRingColors();
 
 noteColorControls.forEach(({ id }) => {
   const el = document.getElementById(id);
   if (!el) return;
   el.addEventListener('input', applyNoteColors);
+});
+
+ringColorControls.forEach(({ input }) => {
+  if (!input) return;
+  input.addEventListener('input', () => {
+    applyRingColors();
+    renderFretboard();
+  });
 });
 
 [
@@ -320,6 +365,8 @@ noteColorControls.forEach(({ id }) => {
   el.addEventListener('change', () => {
     if (id === 'colorModeSelect') {
       updateRingColorSelectorsVisibility();
+      renderFretboard();
+      return;
     }
     renderFretboard();
   });

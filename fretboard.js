@@ -278,6 +278,9 @@ const applyNoteColors = () => {
     const control = document.getElementById(id);
     const value = control?.value || defaultColor;
     document.documentElement.style.setProperty(variable, value);
+    if (control) {
+      control.style.setProperty('--current-color', value);
+    }
   });
 };
 applyNoteColors();

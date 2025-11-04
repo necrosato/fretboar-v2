@@ -70,6 +70,32 @@ body.sato-mode-engaged .controls .advanced-control {
   border-radius: 4px;
 }
 
+.controls input[type="color"] {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  background: none;
+  cursor: pointer;
+  box-shadow: 0 0 10px var(--current-color, rgba(255, 255, 255, 0.35));
+}
+
+.controls input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+  border-radius: 50%;
+}
+
+.controls input[type="color"]::-webkit-color-swatch {
+  border: none;
+  border-radius: 50%;
+}
+
+.controls input[type="color"]::-moz-color-swatch {
+  border: none;
+  border-radius: 50%;
+}
+
 .controls #scaleRootSelect {
   width: 60px;
 }

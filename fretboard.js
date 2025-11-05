@@ -274,36 +274,66 @@ const noteColorControls = [
 ];
 
 const ringColorControlsContainer = document.getElementById('ringColorControls');
-const ringColorControls = [];
+const ringColorLayouts = {
+  absolute: noteNames.map(note => ({
+    note,
+    label: note
+  })),
+  relative: [
+    { note: 'C', label: '1 (Root)' },
+    { note: 'C#', label: '♭2' },
+    { note: 'D', label: '2' },
+    { note: 'D#', label: '♭3' },
+    { note: 'E', label: '3' },
+    { note: 'F', label: '4' },
+    { note: 'F#', label: '#4 / ♭5' },
+    { note: 'G', label: '5' },
+    { note: 'G#', label: '#5 / ♭6' },
+    { note: 'A', label: '6' },
+    { note: 'A#', label: '♭7' },
+    { note: 'B', label: '7' }
+  ]
+};
 
-if (ringColorControlsContainer) {
+let currentRingLayoutMode = null;
+
+const renderRingColorSelectorLayout = (mode) => {
+  if (!ringColorControlsContainer) return;
+  const layoutKey = mode === 'relative' ? 'relative' : 'absolute';
+  if (currentRingLayoutMode === layoutKey && ringColorControlsContainer.children.length) {
+    return;
+  }
+
+  currentRingLayoutMode = layoutKey;
+  ringColorControlsContainer.innerHTML = '';
+
   const heading = document.createElement('span');
-  heading.textContent = 'Ring Colors:';
+  heading.textContent = layoutKey === 'relative' ? 'Relative Ring Colors:' : 'Absolute Ring Colors:';
   ringColorControlsContainer.appendChild(heading);
 
-  noteNames.forEach(note => {
+  ringColorLayouts[layoutKey].forEach(({ note, label }) => {
     const sanitizedNote = note.replace('#', 'Sharp');
     const controlId = `ringColor${sanitizedNote}`;
-    const label = document.createElement('label');
-    label.setAttribute('for', controlId);
+    const controlLabel = document.createElement('label');
+    controlLabel.setAttribute('for', controlId);
+    controlLabel.title = layoutKey === 'relative' ? `${label} – ${note}` : note;
 
     const text = document.createElement('span');
-    text.textContent = note;
-    label.appendChild(text);
+    text.textContent = layoutKey === 'relative' ? `${label} – ${note}` : note;
+    controlLabel.appendChild(text);
 
     const input = document.createElement('input');
     input.type = 'color';
     input.id = controlId;
+    input.dataset.note = note;
     const defaultColor = pitchColors[note] || '#ffffff';
     input.value = defaultColor;
-    label.appendChild(input);
-
     input.style.setProperty('--current-color', input.value);
+    controlLabel.appendChild(input);
 
-    ringColorControlsContainer.appendChild(label);
-    ringColorControls.push({ note, input, defaultColor });
+    ringColorControlsContainer.appendChild(controlLabel);
   });
-}
+};
 
 const noteColorLabels = noteColorControls
   .map(({ id }) => document.getElementById(id)?.closest('label'))
@@ -321,22 +351,28 @@ const syncNoteColorLabelVisibility = () => {
 const updateRingColorSelectorsVisibility = () => {
   if (!ringColorControlsContainer) return;
   const colorModeValue = document.getElementById('colorModeSelect')?.value || '';
+  renderRingColorSelectorLayout(colorModeValue);
   const satoEngaged = document.body.classList.contains('sato-mode-engaged');
   const shouldShow = satoEngaged && colorModeValue !== '';
   ringColorControlsContainer.classList.toggle('hidden', !shouldShow);
   ringColorControlsContainer.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
-  ringColorControls.forEach(({ input }) => {
-    if (!input) return;
+  ringColorControlsContainer.querySelectorAll('input[type="color"]').forEach(input => {
     input.tabIndex = shouldShow ? 0 : -1;
   });
+  if (shouldShow) {
+    applyRingColors();
+  }
 };
 
 const applyRingColors = () => {
-  ringColorControls.forEach(({ note, input, defaultColor }) => {
-    const value = input?.value || defaultColor;
-    if (!value) return;
+  if (!ringColorControlsContainer) return;
+  ringColorControlsContainer.querySelectorAll('input[type="color"]').forEach(input => {
+    const note = input.dataset.note;
+    if (!note) return;
+    const fallback = pitchColors[note] || '#ffffff';
+    const value = input.value || fallback;
     pitchColors[note] = value;
-    input?.style.setProperty('--current-color', value);
+    input.style.setProperty('--current-color', value);
   });
 };
 
@@ -361,13 +397,15 @@ noteColorControls.forEach(({ id }) => {
   el.addEventListener('input', applyNoteColors);
 });
 
-ringColorControls.forEach(({ input }) => {
-  if (!input) return;
-  input.addEventListener('input', () => {
+if (ringColorControlsContainer) {
+  ringColorControlsContainer.addEventListener('input', (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    if (!target.matches('input[type="color"]')) return;
     applyRingColors();
     renderFretboard();
   });
-});
+}
 
 [
   'notesInput',

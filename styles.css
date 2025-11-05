@@ -51,6 +51,31 @@ button:hover {
   gap: 0.5rem;
 }
 
+.ring-color-controls {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+body:not(.sato-mode-engaged) .ring-color-controls {
+  display: none;
+}
+
+.ring-color-controls.hidden {
+  display: none !important;
+}
+
+.ring-color-controls label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.ring-color-controls > span {
+  font-weight: bold;
+  width: 100%;
+}
+
 .controls .advanced-control {
   display: none;
 }

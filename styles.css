@@ -415,6 +415,22 @@ body.sato-mode-engaged #satoModeButton {
   flex: 1;
 }
 
+#metronome-controls label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.25rem 0;
+}
+
+#metronome-controls input[type="number"] {
+  background: #333;
+  color: white;
+  border: 1px solid #666;
+  padding: 4px 8px;
+  border-radius: 4px;
+  width: 80px;
+}
+
 .measure {
   display: inline-block;
   margin: 1rem;

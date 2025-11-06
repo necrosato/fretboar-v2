@@ -51,6 +51,26 @@ class Metronome {
     this.sequence = [];
     this.currentMeasure = 0;
     this.currentBeat = 0;
+    this.beepLengthSeconds = 0.1;
+    this.beepLengthInput = document.getElementById('beepLengthInput');
+    if (this.beepLengthInput) {
+      const initialValue = parseFloat(this.beepLengthInput.value);
+      if (!Number.isNaN(initialValue)) {
+        this.setBeepLengthFromMilliseconds(initialValue);
+      } else {
+        this.beepLengthInput.value = (this.beepLengthSeconds * 1000).toString();
+      }
+      const handleBeepLengthUpdate = () => {
+        const rawValue = parseFloat(this.beepLengthInput.value);
+        if (Number.isNaN(rawValue)) {
+          this.beepLengthInput.value = (this.beepLengthSeconds * 1000).toString();
+          return;
+        }
+        this.setBeepLengthFromMilliseconds(rawValue);
+      };
+      this.beepLengthInput.addEventListener('change', handleBeepLengthUpdate);
+      this.beepLengthInput.addEventListener('blur', handleBeepLengthUpdate);
+    }
     this.addMeasure();
   }
 
@@ -147,11 +167,14 @@ class Metronome {
   gain.connect(this.audioContext.destination);
 
   const startTime = this.nextNoteTime;
-  const stopTime = startTime + 0.1;
+  const beepLength = Math.max(0.02, this.beepLengthSeconds || 0.1);
+  const stopTime = startTime + beepLength;
+  const attackDuration = Math.min(0.01, beepLength / 2);
+  const peakTime = startTime + attackDuration;
 
   // Apply smooth envelope
   gain.gain.setValueAtTime(0, startTime);
-  gain.gain.linearRampToValueAtTime(0.3, startTime + 0.005); // quick fade-in
+  gain.gain.linearRampToValueAtTime(0.3, peakTime); // quick fade-in
   gain.gain.linearRampToValueAtTime(0, stopTime); // fade-out
 
   osc.start(startTime);
@@ -239,6 +262,17 @@ class Metronome {
     const activeInput = document.querySelector(selector);
     if (activeInput) {
       activeInput.classList.add('active-beat');
+    }
+  }
+
+  setBeepLengthFromMilliseconds(milliseconds) {
+    if (typeof milliseconds !== 'number' || Number.isNaN(milliseconds)) {
+      return;
+    }
+    const clamped = Math.min(Math.max(milliseconds, 20), 2000);
+    this.beepLengthSeconds = clamped / 1000;
+    if (this.beepLengthInput) {
+      this.beepLengthInput.value = clamped.toString();
     }
   }
 }

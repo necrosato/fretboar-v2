@@ -433,11 +433,23 @@ if (ringColorControlsContainer) {
 const satoModeButton = document.getElementById('satoModeButton');
 if (satoModeButton) {
   const body = document.body;
+  const updateSatoOnlyElements = (engaged) => {
+    document.querySelectorAll('.sato-only').forEach((element) => {
+      element.setAttribute('aria-hidden', engaged ? 'false' : 'true');
+      if (!engaged) {
+        element.setAttribute('tabindex', '-1');
+      } else {
+        element.removeAttribute('tabindex');
+      }
+    });
+  };
+
   const updateSatoModeButton = () => {
     const engaged = body.classList.contains('sato-mode-engaged');
     satoModeButton.textContent = engaged ? 'Engaged' : 'Sato Mode';
     satoModeButton.classList.toggle('engaged', engaged);
     satoModeButton.setAttribute('aria-pressed', engaged ? 'true' : 'false');
+    updateSatoOnlyElements(engaged);
     syncNoteColorLabelVisibility();
     updateRingColorSelectorsVisibility();
   };

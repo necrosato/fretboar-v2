@@ -84,6 +84,14 @@ body.sato-mode-engaged .controls .advanced-control {
   display: inline-flex;
 }
 
+.sato-only {
+  display: none !important;
+}
+
+body.sato-mode-engaged .sato-only {
+  display: inline-flex !important;
+}
+
 .controls input,
 .controls select,
 .controls button,

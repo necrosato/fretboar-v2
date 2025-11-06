@@ -443,6 +443,7 @@ if (satoModeButton) {
       }
     });
   };
+  window.updateSatoOnlyElements = updateSatoOnlyElements;
 
   const updateSatoModeButton = () => {
     const engaged = body.classList.contains('sato-mode-engaged');

@@ -92,6 +92,10 @@ body.sato-mode-engaged .sato-only {
   display: inline-flex !important;
 }
 
+body.sato-mode-engaged .tone-column.sato-only {
+  display: flex !important;
+}
+
 .controls input,
 .controls select,
 .controls button,

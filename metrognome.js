@@ -183,24 +183,25 @@ class Metronome {
       }, 30);
 
       div.append(tempoInput, document.createElement("br"), tsNumInput, tsDenInput);
-		const toneContainer = document.createElement('div');
-		toneContainer.className = 'tone-column';
+      const toneContainer = document.createElement('div');
+      toneContainer.className = 'tone-column';
+      toneContainer.classList.add('sato-only');
 
-                for (let i = 0; i < measure.timeSignature[0]; i++) {
-                  const toneVal = measure.tones[i] ?? (i === 0 ? 880 : 440);
-                  measure.tones[i] = toneVal;
+      for (let i = 0; i < measure.timeSignature[0]; i++) {
+        const toneVal = measure.tones[i] ?? (i === 0 ? 880 : 440);
+        measure.tones[i] = toneVal;
 
-                  const toneInput = this.createInput(toneVal, `B${i + 1}: `, val => {
-                        this.sequence[index].tones[i] = parseFloat(val) || 0;
-                  }, 60);
+        const toneInput = this.createInput(toneVal, `B${i + 1}: `, val => {
+          this.sequence[index].tones[i] = parseFloat(val) || 0;
+        }, 60);
 
-                  const inputElement = toneInput.querySelector('input');
-                  inputElement.dataset.measureIndex = index;
-                  inputElement.dataset.beatIndex = i;
+        const inputElement = toneInput.querySelector('input');
+        inputElement.dataset.measureIndex = index;
+        inputElement.dataset.beatIndex = i;
 
-                  toneContainer.appendChild(toneInput);
-                }
-                div.appendChild(toneContainer);
+        toneContainer.appendChild(toneInput);
+      }
+      div.appendChild(toneContainer);
       const deleteButton = document.createElement('button');
       deleteButton.textContent = 'Delete';
       deleteButton.onclick = () => this.deleteMeasure(index);
@@ -208,6 +209,9 @@ class Metronome {
 
       measuresContainer.appendChild(div);
     });
+    if (typeof window.updateSatoOnlyElements === 'function') {
+      window.updateSatoOnlyElements(document.body.classList.contains('sato-mode-engaged'));
+    }
     this.updateActiveBeatHighlight();
   }
 

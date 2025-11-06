@@ -23,7 +23,7 @@
     <select id="colorModeSelect">
       <option value="">None</option>
       <option value="absolute">Absolute Pitch Colors</option>
-      <option value="relative">Relative Scale Colors</option>
+      <option value="relative" selected>Relative Scale Colors</option>
     </select>
   </label>
   <label class="advanced-control">Highlight Color: <input id="highlightColorInput" type="color" value="#f39c12" /></label>
@@ -42,9 +42,9 @@
 	<h1>Scale Analysis</h1>
 	<label>
 	  Group scales by:
-	  <select id="groupBySelect">
-		<option value="root">Root</option>
-		<option value="scale">Scale Type</option>
+          <select id="groupBySelect">
+                <option value="root">Root</option>
+                <option value="scale" selected>Scale Type</option>
 		<option value="notes">Note Set</option>
 	  </select>
 	</label>
@@ -54,9 +54,9 @@
     <h1>Metro Gnome</h1>
 	<label>
 	  Synchronize Metronome to:
-	  <select id="metroSyncSelect">
-		<option value="active">Highlight Notes</option>
-		<option value="scale">Scale Notes</option>
+          <select id="metroSyncSelect">
+                <option value="active">Highlight Notes</option>
+                <option value="scale" selected>Scale Notes</option>
 		<option value="none">None</option>
 	  </select>
 	</label>

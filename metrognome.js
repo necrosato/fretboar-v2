@@ -51,31 +51,63 @@ class Metronome {
     this.sequence = [];
     this.currentMeasure = 0;
     this.currentBeat = 0;
-    this.beepLengthSeconds = 0.1;
-    this.beepLengthInput = document.getElementById('beepLengthInput');
-    if (this.beepLengthInput) {
-      const initialValue = parseFloat(this.beepLengthInput.value);
-      if (!Number.isNaN(initialValue)) {
-        this.setBeepLengthFromMilliseconds(initialValue);
-      } else {
-        this.beepLengthInput.value = (this.beepLengthSeconds * 1000).toString();
-      }
-      const handleBeepLengthUpdate = () => {
-        const rawValue = parseFloat(this.beepLengthInput.value);
-        if (Number.isNaN(rawValue)) {
-          this.beepLengthInput.value = (this.beepLengthSeconds * 1000).toString();
-          return;
-        }
-        this.setBeepLengthFromMilliseconds(rawValue);
+    this.legatoToggle = document.getElementById('legatoToggle');
+    if (this.legatoToggle) {
+      const syncLegatoClass = () => {
+        document.body.classList.toggle('legato-enabled', this.legatoToggle.checked);
+        this.renderMeasures();
       };
-      this.beepLengthInput.addEventListener('change', handleBeepLengthUpdate);
-      this.beepLengthInput.addEventListener('blur', handleBeepLengthUpdate);
+      this.legatoToggle.addEventListener('change', syncLegatoClass);
+      syncLegatoClass();
     }
     this.addMeasure();
   }
 
+  normalizeMeasure(measure) {
+    if (!measure) return;
+    if (!Array.isArray(measure.timeSignature) || measure.timeSignature.length < 2) {
+      measure.timeSignature = [4, 4];
+    } else {
+      measure.timeSignature = [
+        parseInt(measure.timeSignature[0], 10) || 4,
+        parseInt(measure.timeSignature[1], 10) || 4
+      ];
+    }
+
+    const beats = Math.max(1, measure.timeSignature[0]);
+    const normalizedTones = [];
+    for (let i = 0; i < beats; i++) {
+      const entry = Array.isArray(measure.tones) ? measure.tones[i] : undefined;
+      const defaultFrequency = i === 0 ? 880 : 440;
+      const beatData = typeof entry === 'number' || entry == null
+        ? { frequency: typeof entry === 'number' ? entry : defaultFrequency, durationMs: 100 }
+        : {
+            frequency: (() => {
+              const parsed = parseFloat(entry.frequency);
+              return Number.isFinite(parsed) ? Math.max(parsed, 20) : defaultFrequency;
+            })(),
+            durationMs: (() => {
+              const parsed = parseFloat(entry.durationMs);
+              return Number.isFinite(parsed) ? parsed : 100;
+            })()
+          };
+      beatData.durationMs = Math.min(Math.max(beatData.durationMs, 20), 2000);
+      normalizedTones.push(beatData);
+    }
+    measure.tones = normalizedTones;
+  }
+
+  normalizeSequence() {
+    this.sequence.forEach(measure => this.normalizeMeasure(measure));
+  }
+
   addMeasure(tempo = 120, timeSignature = [4, 4], tones = []) {
-    const measure = { tempo, timeSignature, tones };
+    const measure = {
+      tempo,
+      timeSignature: Array.isArray(timeSignature) ? [...timeSignature] : [4, 4],
+      tones: Array.isArray(tones) ? [...tones] : []
+    };
+    this.normalizeMeasure(measure);
     this.sequence.push(measure);
     this.renderMeasures();
   }
@@ -158,8 +190,9 @@ class Metronome {
 
     const scaleRootName = document.getElementById('scaleRootSelect').value.toUpperCase();
     const minFrequency = scaleRootName ? noteToFrequency(scaleRootName) : 440;
-    let tone = overrideToneToggle && window.metroNote ? noteToFrequency(window.metroNote) : currentMeasureData.tones[this.currentNote];
-	tone = overrideToneToggle && tone < minFrequency ? tone * 2 : tone;
+    const beatData = currentMeasureData.tones[this.currentNote] || { frequency: 440, durationMs: 100 };
+    let tone = overrideToneToggle && window.metroNote ? noteToFrequency(window.metroNote) : beatData.frequency;
+        tone = overrideToneToggle && tone < minFrequency ? tone * 2 : tone;
     const osc = this.audioContext.createOscillator();
     osc.frequency.value = tone || 440;
   const gain = this.audioContext.createGain();
@@ -167,7 +200,9 @@ class Metronome {
   gain.connect(this.audioContext.destination);
 
   const startTime = this.nextNoteTime;
-  const beepLength = Math.max(0.02, this.beepLengthSeconds || 0.1);
+  const secondsPerBeat = 60.0 / currentMeasureData.tempo;
+  const durationMs = Math.min(Math.max(beatData.durationMs ?? 100, 20), 2000);
+  const beepLength = this.legatoToggle?.checked ? secondsPerBeat : Math.max(0.02, durationMs / 1000);
   const stopTime = startTime + beepLength;
   const attackDuration = Math.min(0.01, beepLength / 2);
   const peakTime = startTime + attackDuration;
@@ -185,7 +220,9 @@ class Metronome {
   renderMeasures() {
     const measuresContainer = document.getElementById('measures');
     measuresContainer.innerHTML = '';
+    const legatoEnabled = this.legatoToggle?.checked;
     this.sequence.forEach((measure, index) => {
+      this.normalizeMeasure(measure);
       const div = document.createElement('div');
       div.className = 'measure';
       div.dataset.measureIndex = index;
@@ -211,18 +248,37 @@ class Metronome {
       toneContainer.classList.add('sato-only');
 
       for (let i = 0; i < measure.timeSignature[0]; i++) {
-        const toneVal = measure.tones[i] ?? (i === 0 ? 880 : 440);
-        measure.tones[i] = toneVal;
+        const beatData = measure.tones[i] ?? { frequency: i === 0 ? 880 : 440, durationMs: 100 };
+        measure.tones[i] = beatData;
 
-        const toneInput = this.createInput(toneVal, `B${i + 1}: `, val => {
-          this.sequence[index].tones[i] = parseFloat(val) || 0;
-        }, 60);
+        const beatRow = document.createElement('div');
+        beatRow.className = 'beat-row';
+
+        const toneInput = this.createInput(beatData.frequency, `B${i + 1}: `, val => {
+          const parsed = parseFloat(val);
+          if (Number.isFinite(parsed)) {
+            this.sequence[index].tones[i].frequency = Math.max(parsed, 20);
+          }
+        }, 60, { min: 20, step: 1 });
 
         const inputElement = toneInput.querySelector('input');
         inputElement.dataset.measureIndex = index;
         inputElement.dataset.beatIndex = i;
 
-        toneContainer.appendChild(toneInput);
+        const durationLabel = this.createInput(beatData.durationMs, 'Dur (ms): ', val => {
+          const parsed = parseFloat(val);
+          const clamped = Number.isFinite(parsed) ? Math.min(Math.max(parsed, 20), 2000) : beatData.durationMs;
+          this.sequence[index].tones[i].durationMs = clamped;
+        }, 80, { min: 20, max: 2000, step: 10 });
+        durationLabel.classList.add('beat-duration');
+        const durationInput = durationLabel.querySelector('input');
+        if (durationInput) {
+          durationInput.disabled = !!legatoEnabled;
+        }
+        durationLabel.setAttribute('aria-hidden', legatoEnabled ? 'true' : 'false');
+
+        beatRow.append(toneInput, durationLabel);
+        toneContainer.appendChild(beatRow);
       }
       div.appendChild(toneContainer);
       const deleteButton = document.createElement('button');
@@ -238,13 +294,17 @@ class Metronome {
     this.updateActiveBeatHighlight();
   }
 
-  createInput(value, labelText, onChange, width = 60) {
+  createInput(value, labelText, onChange, width = 60, options = {}) {
     const label = document.createElement('label');
     label.textContent = `${labelText}`;
     const input = document.createElement('input');
     input.type = 'number';
     input.value = value;
     input.style.width = `${width}px`;
+    if (options.min != null) input.min = options.min;
+    if (options.max != null) input.max = options.max;
+    if (options.step != null) input.step = options.step;
+    if (options.className) label.classList.add(options.className);
     input.addEventListener('input', () => onChange(input.value));
     label.appendChild(input);
     return label;
@@ -265,16 +325,6 @@ class Metronome {
     }
   }
 
-  setBeepLengthFromMilliseconds(milliseconds) {
-    if (typeof milliseconds !== 'number' || Number.isNaN(milliseconds)) {
-      return;
-    }
-    const clamped = Math.min(Math.max(milliseconds, 20), 2000);
-    this.beepLengthSeconds = clamped / 1000;
-    if (this.beepLengthInput) {
-      this.beepLengthInput.value = clamped.toString();
-    }
-  }
 }
 
 const metronome = new Metronome();
@@ -311,6 +361,7 @@ document.getElementById('file-input').addEventListener('change', (event) => {
         const loadedSequence = JSON.parse(e.target.result);
         if (Array.isArray(loadedSequence)) {
           metronome.sequence = loadedSequence;
+          metronome.normalizeSequence();
           metronome.renderMeasures();
           alert('Sequence loaded from JSON file!');
         } else {

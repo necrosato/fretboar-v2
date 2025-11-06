@@ -486,6 +486,22 @@ input.active-beat {
   margin-top: 0.5rem;
 }
 
+.beat-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.beat-row label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+body.legato-enabled .beat-duration {
+  display: none !important;
+}
+
 /* ================================
    Responsive Layout
 ================================== */

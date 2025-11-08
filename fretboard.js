@@ -441,6 +441,19 @@ if (satoModeButton) {
       } else {
         element.removeAttribute('tabindex');
       }
+
+      if (element.matches('input, select, button, textarea')) {
+        element.disabled = !engaged;
+      }
+
+      element.querySelectorAll('input, select, button, textarea').forEach(control => {
+        control.disabled = !engaged;
+        if (!engaged) {
+          control.setAttribute('tabindex', '-1');
+        } else {
+          control.removeAttribute('tabindex');
+        }
+      });
     });
   };
   window.updateSatoOnlyElements = updateSatoOnlyElements;
